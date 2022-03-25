@@ -1,28 +1,128 @@
-import React from 'react'
+import axios from 'axios';
+import React, { useState } from 'react'
+import { Link, Route, Routes } from 'react-router-dom';
 
 const Register = () => {
+    const [form, setForm] = useState({
+        name: "",
+        email: "",
+        phone: "",
+        image: null,
+        password: "",
+    })
+    const [error, setError] = useState("")
+    const [response, setResponse] = useState("")
+    const [uniqueEmail, setUniqueEmail] = useState(false)
+    const [loading, setLoading] = useState(false)
+
+    function query(e) {
+        e.preventDefault()
+        setLoading(true)
+        axios.post("/email", {email:form.email}).then((res) => {
+            console.log(res.data);
+            if (res.data) {
+                setError("Email has already an account, try to login")
+                setUniqueEmail(false)
+                setResponse("")
+                console.log("not unique");
+            } else {
+                console.log("unique");
+                setUniqueEmail(true)
+                setError("")
+                setResponse("")
+            }
+        }).catch(err => setError(err.message)).finally(() => {
+            setLoading(false)
+        })
+    }
+
+    function submit(e) {
+        console.log("submit");
+        e.preventDefault();
+        setLoading(true)
+        const fd = new FormData();
+        fd.append("name", form.name);
+        fd.append("email", form.email);
+        fd.append("password", form.password);
+        fd.append("phone", form.phone);
+        fd.append("image", form.image);
+        axios.post("/registration", fd).then((res) => {
+            if (res.data === "done") {
+                setResponse("Registerd successsfully, Login!")
+                setError("")
+                setUniqueEmail(false)
+                setForm({ email: "", name: "", password: "", phone: "", image: null })
+            } else {
+                setResponse("")
+                setError(res.data)
+            }
+        }).catch(err => setError(err.message)).finally(() => {
+            setLoading(false)
+        })
+    }
+
     return (
         <div className="d-flex align-items-center justify-content-center vh-100">
             <div className="card">
                 <div className="card-body">
-                    <form>
-                        <div class="mb-3">
-                            <label for="exampleInputEmail1" class="form-label">Email address</label>
-                            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" />
-                                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="exampleInputPassword1" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="exampleInputPassword1" />
-                        </div>
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="exampleCheck1" />
-                                <label class="form-check-label" for="exampleCheck1">Check me out</label>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                    <form onSubmit={uniqueEmail ? submit : query} encType={uniqueEmail ? "multipart/form-data" : ""}>
+                        <h3 className="text-center">Registration</h3>
+                        {error && <p className="alert alert-danger">{error}</p>}
+                        {response && <p className="alert alert-success">{response}</p>}
+                        <hr />
+                        <Routes>
+                            <Route path='/' element={uniqueEmail?<Form form={form} setForm={setForm} />:<EmailEl form={form} setForm={setForm} />} />
+                        </Routes>
+                        <small className="me-3">Already have an account? <Link to={'/login'}>Login</Link></small>
+                        <button type={!loading?"submit":"button"} className="btn btn-primary">{loading ? (
+                            <span>
+                                Submitting...
+                                <div className="spinner-border" style={{ width: 20, height: 20 }} role="status">
+                                    <span className="visually-hidden">Loading...</span>
+                                </div>
+                            </span>
+                        ) : "Submit"}</button>
                     </form>
                 </div>
             </div>
+        </div>
+    )
+}
+
+const Form = ({ form, setForm }) => {
+    return (
+        <div>
+            <div className="mb-3">
+                <label htmlFor="name" className="form-label">Full name</label>
+                <input required type="text" className="form-control" id="name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
+            </div>
+            {/* <div className="mb-3">
+                <label htmlFor="exampleInputEmail1" className="form-label">Email address</label>
+                <input required type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
+                <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
+            </div> */}
+            <div className="mb-3">
+                <label htmlFor="phone" className="form-label">Phone number</label>
+                <input required type="number" className="form-control" id="phone" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} />
+            </div>
+            <div className="mb-3">
+                <label htmlFor="image" className="form-label">Profile picture</label>
+                <input required className="form-control" type="file" id="image" accept='images/*' onChange={e => setForm({ ...form, image: e.target.files[0] })} />
+            </div>
+            <div className="mb-3">
+                <label htmlFor="exampleInputPassword1" className="form-label">Password</label>
+                <input required type="password" className="form-control" id="exampleInputPassword1" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />
+            </div>
+        </div>
+    )
+}
+
+const EmailEl = ({ form, setForm }) => {
+    return (
+        <div className="mb-3">
+            <label htmlFor="exampleInputEmail1" className="form-label">Email address</label>
+            <input required type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
+            <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
         </div>
     )
 }

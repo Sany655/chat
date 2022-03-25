@@ -5,8 +5,8 @@ import 'bootstrap/dist/js/bootstrap.bundle.min';
 import App from './App';
 
 ReactDOM.render(
-  <React.Fragment>
+  <React.StrictMode>
     <App />
-  </React.Fragment>,
+  </React.StrictMode>,
   document.getElementById('root')
 );

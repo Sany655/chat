@@ -1,17 +1,12 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Inbox from "./components/Inbox";
-import Login from "./components/Login";
-import Register from "./components/Register";
+import { Provider } from "react-redux";
+import ReactRoutes from "./ReactRoutes";
+import store from "./redux/Reducers";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route to='/' element={<Inbox />} />
-        <Route to='/login' element={<Login />} />
-        <Route to='/register' element={<Register />} />
-      </Routes>
-    </BrowserRouter>
+    <Provider store={store}>
+      <ReactRoutes />
+    </Provider>
   );
 }
 
