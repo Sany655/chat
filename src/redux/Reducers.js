@@ -2,13 +2,15 @@ import axios from "axios";
 import { createStore } from "redux";
 import io from "socket.io-client";
 
-axios.defaults.baseURL = "http://localhost:5000"
-// axios.defaults.baseURL = "https://calling-dudes.herokuapp.com/"
+const urls = "https://calling-dudes.herokuapp.com/" // production
+// const urls = "http://localhost:5000" // development
+
+axios.defaults.baseURL = urls
 
 const initialState = {
     auth: localStorage.getItem("user") ? true : false,
     user: localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : {},
-    socket: io.connect("http://localhost:5000")
+    socket: io.connect(urls)
 }
 
 const Reducers = (state = initialState, action) => {
