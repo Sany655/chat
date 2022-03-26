@@ -3,6 +3,7 @@ import { createStore } from "redux";
 import io from "socket.io-client";
 
 axios.defaults.baseURL = "http://localhost:5000"
+// axios.defaults.baseURL = "https://calling-dudes.herokuapp.com/"
 
 const initialState = {
     auth: localStorage.getItem("user") ? true : false,
