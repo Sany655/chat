@@ -12,7 +12,8 @@ const server = http.createServer(app)
 dotenv.config()
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:3000",
+        origin: "http://localhost:3000", // development mode
+        // origin: "https://calling-dudes.web.app", // production mode
         // methods: ["GET", "POST"]
     }
 })
@@ -74,6 +75,10 @@ async function database() {
             }).catch(err => res.send(err.message))
         })
 
+        app.get("/mongo", (req, res) => {
+            res.send("mongo connected")
+        })
+
         console.log("mongo connected");
     } catch (error) {
         console.log(error.message);
@@ -97,5 +102,5 @@ io.on("connection", (socket) => {
 })
 
 server.listen(process.env.PORT, () => {
-    console.log("http://localhost:5000")
+    console.log("http://localhost:"+process.env.PORT)
 })
