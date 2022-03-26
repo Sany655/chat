@@ -6,7 +6,7 @@ const { MongoClient, ServerApiVersion } = require("mongodb")
 const multer = require("multer")
 // const fs = require('fs')
 const cors = require("cors")
-
+let socket;
 const app = express()
 const server = http.createServer(app)
 dotenv.config()
@@ -47,7 +47,7 @@ async function database() {
                 if (emailRes) {
                     console.log("true");
                     res.send("true")
-                }else{
+                } else {
                     console.log("false");
                     res.send("false")
                 }
@@ -68,7 +68,7 @@ async function database() {
             }
         )
 
-        app.post("/login", (req,res) => {
+        app.post("/login", (req, res) => {
             users.findOne(req.body).then(loginResponse => {
                 res.send(loginResponse);
             }).catch(err => res.send(err.message))
@@ -87,9 +87,11 @@ app.get("/", (req, res) => {
 })
 
 io.on("connection", (socket) => {
+    socket = socket;
     console.log(socket.id);
 
-    socket.on("disconnect", (socket) => {
+
+    socket.on("disconnect", () => {
         console.log(socket.id + " is disconnected");
     })
 })

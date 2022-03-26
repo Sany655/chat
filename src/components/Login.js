@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 const Login = () => {
     const [form, setForm] = useState({
@@ -17,16 +17,17 @@ const Login = () => {
         axios.post("/login", form).then(res => {
             console.log(res.data);
             if (res.data._id) {
-                dispatch({type:"LOGIN",payload:res.data})
-                setForm({email:"",password:""})
+                dispatch({ type: "LOGIN", payload: res.data })
+                setForm({ email: "", password: "" })
                 setError("")
-            }else{
+            } else {
                 setError("Wrong Credentials, Try again")
             }
         }).catch(ree => setError(ree.message)).finally(() => {
             setLoading(false);
         })
     }
+    const socket = useSelector(store => store.socket)
 
     return (
         <div className="d-flex align-items-center justify-content-center vh-100">
@@ -34,6 +35,7 @@ const Login = () => {
                 <div className="card-body">
                     <form onSubmit={login}>
                         <h3 className="text-center">Login</h3>
+                        <p className='text-danger'>{socket.id ? socket.id : "you are in offline"}</p>
                         {error && <div className="alert alert-danger">{error}</div>}
                         <hr />
                         <div className="mb-3">
@@ -46,7 +48,7 @@ const Login = () => {
                             <input required value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} type="password" className="form-control" id="exampleInputPassword1" />
                         </div>
                         <small className='me-3'>Not have an accout? <Link to={'/register'}>Register</Link></small>
-                        <button type={!loading?"submit":"button"} className="btn btn-primary">{loading ? (
+                        <button type={!loading ? "submit" : "button"} className="btn btn-primary">{loading ? (
                             <span>
                                 Submitting...
                                 <div className="spinner-border" style={{ width: 20, height: 20 }} role="status">
