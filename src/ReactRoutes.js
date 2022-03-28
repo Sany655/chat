@@ -1,11 +1,24 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Inbox from "./components/Inbox";
+import Loading from './components/Loading';
 import Login from "./components/Login";
 import Register from "./components/Register";
 
 const ReactRoutes = () => {
+    const socket = useSelector(store => store.socket)
+    const user = useSelector(store => store.user)
+    const auth = useSelector(store => store.auth)
+
+    useEffect(() => {
+        if (auth) {
+            socket.emit("loggedIn", { _id: user._id })
+        }else{
+            // socket.emit("loggedOut", { _id: user._id })
+        }
+    }, [auth])
+
     return (
         <BrowserRouter>
             <Routes>

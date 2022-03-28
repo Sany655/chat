@@ -1,13 +1,13 @@
 import React from 'react'
 import ChatBox from './ChatBox'
+import Friends from './Friends'
 import Peoples from './Peoples'
-import UserList from './UserList'
 
 const Inbox = () => {
   return (
     <div className="container-fluid my-4">
       <div className="row">
-        <UserList />
+        <Friends />
         <ChatBox />
         <Peoples />
       </div>

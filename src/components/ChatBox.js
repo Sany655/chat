@@ -5,11 +5,11 @@ import { Link } from 'react-router-dom';
 const ChatBox = () => {
     const dispatch = useDispatch()
     const [time, setTime] = useState()
-    useEffect(() => {
-        setInterval(() => {
-            setTime(new Date().toLocaleString());
-        }, 500);
-    }, [])
+    
+    setInterval(() => {
+        setTime(new Date().toLocaleString());
+    }, 500);
+    
     return (
         <div className="col-12 col-md-6">
             <div className="card" style={{ height: "90vh" }}>
@@ -34,7 +34,7 @@ const ChatBox = () => {
                         </a>
                     </div>
                 </div>
-                <div className="card-body">
+                <div className="card-body overflow-auto">
                     <p className="bg-primary text-light p-2 rounded text-end">Lorem ipsum, dolor sit ame</p>
                     <p className="bg-light text-dark p-2 rounded">Lorem ipsum, dolor sit</p>
                     <p className="bg-primary text-light p-2 rounded text-end">Lorem ipsum, dolor sit ame</p>

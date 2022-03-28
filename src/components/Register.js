@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { useState } from 'react'
+import { useSelector } from 'react-redux';
 import { Link, Route, Routes } from 'react-router-dom';
 
 const Register = () => {
@@ -14,19 +15,17 @@ const Register = () => {
     const [response, setResponse] = useState("")
     const [uniqueEmail, setUniqueEmail] = useState(false)
     const [loading, setLoading] = useState(false)
+    const socket = useSelector(store => store.socket)
 
     function query(e) {
         e.preventDefault()
         setLoading(true)
         axios.post("/email", {email:form.email}).then((res) => {
-            console.log(res.data);
             if (res.data) {
                 setError("Email has already an account, try to login")
                 setUniqueEmail(false)
                 setResponse("")
-                console.log("not unique");
             } else {
-                console.log("unique");
                 setUniqueEmail(true)
                 setError("")
                 setResponse("")
@@ -37,7 +36,6 @@ const Register = () => {
     }
 
     function submit(e) {
-        console.log("submit");
         e.preventDefault();
         setLoading(true)
         const fd = new FormData();
@@ -52,6 +50,7 @@ const Register = () => {
                 setError("")
                 setUniqueEmail(false)
                 setForm({ email: "", name: "", password: "", phone: "", image: null })
+                socket.emit("registered")
             } else {
                 setResponse("")
                 setError(res.data)

@@ -2,15 +2,16 @@ import axios from "axios";
 import { createStore } from "redux";
 import io from "socket.io-client";
 
-const urls = "https://calling-dudes.herokuapp.com/" // production
-// const urls = "http://localhost:5000" // development
-
+// const urls = "https://calling-dudes.herokuapp.com/" // production
+const urls = "http://localhost:5000" // development
 axios.defaults.baseURL = urls
+const user = JSON.parse(localStorage.getItem("user"))
 
 const initialState = {
     auth: localStorage.getItem("user") ? true : false,
-    user: localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : {},
-    socket: io.connect(urls)
+    user: localStorage.getItem("user") ? user : {},
+    socket: io.connect(urls),
+    url:urls
 }
 
 const Reducers = (state = initialState, action) => {
@@ -23,7 +24,12 @@ const Reducers = (state = initialState, action) => {
                 user: action.payload
             };
         case "LOGOUT":
-            localStorage.removeItem("user")
+            axios.post("/logout",{_id:state.user._id}).then((res) => {
+                // if (res.data.lastErrorObject.updatedExisting) {
+                    localStorage.removeItem("user")
+                    state.socket.emit("loggedIn",{_id:state.user._id})
+                // }
+            }).catch(err => console.log(err.message))
             return {
                 ...state,
                 auth: false,

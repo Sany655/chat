@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { useDispatch, useSelector } from 'react-redux'
@@ -10,24 +10,28 @@ const Login = () => {
     })
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
+    const socket = useSelector(store => store.socket)
     const dispatch = useDispatch()
-    const login = (e) => {
+
+    const abort = new AbortController()
+    const login = async (e) => {
         e.preventDefault();
         setLoading(true)
-        axios.post("/login", form).then(res => {
-            console.log(res.data);
-            if (res.data._id) {
-                dispatch({ type: "LOGIN", payload: res.data })
+        form.socket = socket.id;
+        try {
+            const res = await axios.post("/login", form, { signal: abort.signal })
+            if (res.data.lastErrorObject.updatedExisting) {
                 setForm({ email: "", password: "" })
                 setError("")
+                dispatch({ type: "LOGIN", payload: res.data.value })
             } else {
                 setError("Wrong Credentials, Try again")
             }
-        }).catch(ree => setError(ree.message)).finally(() => {
             setLoading(false);
-        })
+        } catch (error) {
+            console.log(error.message);
+        }
     }
-    const socket = useSelector(store => store.socket)
 
     return (
         <div className="d-flex align-items-center justify-content-center vh-100">
@@ -35,7 +39,6 @@ const Login = () => {
                 <div className="card-body">
                     <form onSubmit={login}>
                         <h3 className="text-center">Login</h3>
-                        <p className='text-danger'>{socket.id ? socket.id : "you are in offline"}</p>
                         {error && <div className="alert alert-danger">{error}</div>}
                         <hr />
                         <div className="mb-3">
