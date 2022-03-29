@@ -11,7 +11,7 @@ const initialState = {
     auth: localStorage.getItem("user") ? true : false,
     user: localStorage.getItem("user") ? user : {},
     socket: io.connect(urls),
-    url:urls
+    url: urls
 }
 
 const Reducers = (state = initialState, action) => {
@@ -24,12 +24,8 @@ const Reducers = (state = initialState, action) => {
                 user: action.payload
             };
         case "LOGOUT":
-            axios.post("/logout",{_id:state.user._id}).then((res) => {
-                // if (res.data.lastErrorObject.updatedExisting) {
-                    localStorage.removeItem("user")
-                    state.socket.emit("loggedIn",{_id:state.user._id})
-                // }
-            }).catch(err => console.log(err.message))
+            // state.socket.disconnect()
+            localStorage.removeItem("user")
             return {
                 ...state,
                 auth: false,

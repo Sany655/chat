@@ -15,7 +15,7 @@ const ReactRoutes = () => {
         if (auth) {
             socket.emit("loggedIn", { _id: user._id })
         }else{
-            // socket.emit("loggedOut", { _id: user._id })
+            socket.disconnect()
         }
     }, [auth])
 

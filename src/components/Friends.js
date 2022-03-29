@@ -8,16 +8,18 @@ const Friends = () => {
     const user = useSelector(store => store.user)
     const url = useSelector(store => store.url)
     const [callingFriends, setCallingFriends] = useState(false)
-    useEffect(() => {
-        axios.get("get_friends?user=" + user._id).then(res => setFriends(res.data)).catch(err => console.log(err.message)).finally(() => setCallingFriends(false))
-    }, [callingFriends])
-
     const socket = useSelector(store => store.socket)
+    
     useEffect(() => {
         socket.on("new_friend_added", () => {
             setCallingFriends(true)
         })    
     },[])
+    useEffect(() => {
+        console.log("friends component loaded");
+        axios.get("get_friends?user=" + user._id).then(res => setFriends(res.data)).catch(err => console.log(err.message)).finally(() => setCallingFriends(false))
+    }, [callingFriends])
+
     return (
         <div className="d-none d-md-block col-md-3">
             <div className="card" style={{ height: "90vh" }}>

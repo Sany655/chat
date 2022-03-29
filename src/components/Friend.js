@@ -9,15 +9,16 @@ const Friend = ({ friend }) => {
     const url = useSelector(store => store.url)
     const socket = useSelector(store => store.socket)
     useEffect(() => {
-        friend.users.map(f => {
-            if (user._id !== f) {
-                axios.get("get_friend?friend=" + f).then(fInfo => setFrnd(fInfo.data))
-                setCallingFriend([false,...callingFriend])
-            }
-        })
+        const frndId = friend.users.find(f => f !== user._id);
+        if (callingFriend[1] === frndId) {
+            axios.get("get_friend?friend=" + frndId).then(fInfo => setFrnd(fInfo.data)).finally(() => setCallingFriend([false, ...callingFriend]))
+        }else{
+            axios.get("get_friend?friend=" + frndId).then(fInfo => setFrnd(fInfo.data)).finally(() => setCallingFriend([false, ...callingFriend]))
+        }
     }, [callingFriend[0]])
 
     useEffect(() => {
+        console.log("lloged on called");
         socket.on("loggedOn", (data) => {
             setCallingFriend([true, data])
         })
