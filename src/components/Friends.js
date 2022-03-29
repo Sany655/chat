@@ -16,8 +16,9 @@ const Friends = () => {
         })    
     },[])
     useEffect(() => {
-        console.log("friends component loaded");
-        axios.get("get_friends?user=" + user._id).then(res => setFriends(res.data)).catch(err => console.log(err.message)).finally(() => setCallingFriends(false))
+        socket.emit("get_friends",{id:user._id}, (data) => {
+            setFriends(data)
+        })
     }, [callingFriends])
 
     return (

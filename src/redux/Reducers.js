@@ -2,7 +2,7 @@ import axios from "axios";
 import { createStore } from "redux";
 import io from "socket.io-client";
 
-// const urls = "https://calling-dudes.herokuapp.com/" // production
+// const urls = "https://calling-dudes.herokuapp.com" // production
 const urls = "http://localhost:5000" // development
 axios.defaults.baseURL = urls
 const user = JSON.parse(localStorage.getItem("user"))
@@ -24,11 +24,13 @@ const Reducers = (state = initialState, action) => {
                 user: action.payload
             };
         case "LOGOUT":
-            // state.socket.disconnect()
+            state.socket.disconnect()
             localStorage.removeItem("user")
+            const socket = io.connect(urls)
             return {
                 ...state,
                 auth: false,
+                socket:socket,
                 user: {}
             };
 

@@ -12,25 +12,33 @@ const Login = () => {
     const [loading, setLoading] = useState(false)
     const socket = useSelector(store => store.socket)
     const dispatch = useDispatch()
-
-    const abort = new AbortController()
-    const login = async (e) => {
-        e.preventDefault();
+    const login = (e) => {
         setLoading(true)
-        form.socket = socket.id;
-        try {
-            const res = await axios.post("/login", form, { signal: abort.signal })
-            if (res.data.lastErrorObject.updatedExisting) {
+        e.preventDefault();
+        socket.emit("login", form, (data) => {
+            if (data.lastErrorObject.updatedExisting) {
                 setForm({ email: "", password: "" })
                 setError("")
-                dispatch({ type: "LOGIN", payload: res.data.value })
+                dispatch({ type: "LOGIN", payload: data.value })
+                setLoading(false);
             } else {
                 setError("Wrong Credentials, Try again")
+                setLoading(false);
             }
-            setLoading(false);
-        } catch (error) {
-            console.log(error.message);
-        }
+        })
+        // try {
+        //     const res = await axios.post("/login", form, { signal: abort.signal })
+        //     if (res.data.lastErrorObject.updatedExisting) {
+        //         setForm({ email: "", password: "" })
+        //         setError("")
+        //         dispatch({ type: "LOGIN", payload: res.data.value })
+        //     } else {
+        //         setError("Wrong Credentials, Try again")
+        //     }
+        //     setLoading(false);
+        // } catch (error) {
+        //     console.log(error.message);
+        // }
     }
 
     return (

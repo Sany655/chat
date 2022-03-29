@@ -4,25 +4,28 @@ import { useSelector } from 'react-redux';
 
 const Friend = ({ friend }) => {
     const [frnd, setFrnd] = useState({})
-    const [callingFriend, setCallingFriend] = useState([false, ""])
     const user = useSelector(store => store.user)
     const url = useSelector(store => store.url)
     const socket = useSelector(store => store.socket)
     useEffect(() => {
         const frndId = friend.users.find(f => f !== user._id);
-        if (callingFriend[1] === frndId) {
-            axios.get("get_friend?friend=" + frndId).then(fInfo => setFrnd(fInfo.data)).finally(() => setCallingFriend([false, ...callingFriend]))
-        }else{
-            axios.get("get_friend?friend=" + frndId).then(fInfo => setFrnd(fInfo.data)).finally(() => setCallingFriend([false, ...callingFriend]))
-        }
-    }, [callingFriend[0]])
+        getFriendWithSocket(frndId)
+    }, [])
 
     useEffect(() => {
-        console.log("lloged on called");
         socket.on("loggedOn", (data) => {
-            setCallingFriend([true, data])
+            const frndId = friend.users.find(f => f !== user._id);
+            if (data === frndId) {
+                getFriendWithSocket(data)
+            }
         })
     }, [])
+
+    function getFriendWithSocket(frndId) {
+        socket.emit("get_friend", frndId, (data) => {
+            setFrnd(data)
+        })
+    }
 
     return (
         <li className={`list-group-item ${frnd.as && "active"} d-flex align-items-center justify-content-between overflow-auto`}>

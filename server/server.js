@@ -8,11 +8,11 @@ const fs = require('fs')
 const cors = require("cors")
 const app = express()
 const server = http.createServer(app)
-app.use('images', express.static(__dirname + '/images'));
+app.use('/images', express.static(__dirname + '/images'));
 const io = new Server(server, {
     cors: {
-        // origin: "http://localhost:3000", // development mode
-        origin: "https://calling-dudes.web.app", // production mode
+        origin: "http://localhost:3000", // development mode
+        // origin: "https://calling-dudes.web.app", // production mode
         // methods: ["GET", "POST"]
     }
 })
@@ -37,12 +37,10 @@ const register = require("./controllers/register")
 const login = require("./controllers/login")
 const peoples = require("./controllers/peoples")
 const connect_people = require("./controllers/connect_people")
-const get_friends = require("./controllers/get_friends")
-const get_friend = require("./controllers/get_friend")
 const email = require("./controllers/email")
 
 app.get("/", (req, res) => {
-    res.sendFile(__dirname+"/public/index.html")
+    res.sendFile(__dirname + "/public/index.html")
 })
 
 async function database() {
@@ -55,21 +53,36 @@ async function database() {
 
         app.post("/email", email(users))
         app.post("/registration", upload.single("image"), register(users))
-        app.post("/login", login(users))
+        // app.post("/login", login(users))
         app.post("/peoples", peoples(users))
         app.post("/connect_people", connect_people(friends))
-        app.get("/get_friends", get_friends(friends))
-        app.get("/get_friend", get_friend(users))
 
         io.on("connection", async (socket) => {
 
             socket.on("registered", () => {
                 socket.broadcast.emit("newUserFound");
             })
+            socket.on("login", (form, cb) => {
+                const socketId = socket.id;
+                users.findOneAndUpdate(form, { $set: { active: true, socket: socketId } }).then(loginResponse => {
+                    cb(loginResponse);
+                }).catch(err => cb(err.message))
+            })
+            socket.on("get_friends", (data, cb) => {
+                friends.find({ users: { $elemMatch: { $eq: data.id } } }).sort({ lastMessage: -1 }).toArray().then(friendsResponse => {
+                    cb(friendsResponse)
+                }).catch(err => console.log(err.message))
+            })
+            socket.on("get_friend", (id, cb) => {
+                users.findOne({ _id: ObjectId(id) }).then(data => {
+                    cb(data)
+                })
+            })
             socket.on("new_friend_added", () => {
                 socket.emit("new_friend_added")
             })
             socket.on("loggedIn", (data) => {
+                console.log(socket.id);
                 users.findOneAndUpdate({ _id: ObjectId(data._id) }, { $set: { active: true, socket: socket.id } }).then((res) => {
                     if (res.lastErrorObject.updatedExisting) {
                         socket.broadcast.emit("loggedOn", data._id)
@@ -78,12 +91,9 @@ async function database() {
             })
 
             socket.on("disconnect", () => {
-
                 users.findOneAndUpdate({ socket: socket.id }, { $set: { active: false, socket: null } }).then((res) => {
                     if (res.lastErrorObject.updatedExisting) {
                         socket.broadcast.emit("loggedOn", res.value._id)
-                    }else{
-                        res
                     }
                 }).catch(err => console.log(err.message))
             })
