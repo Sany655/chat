@@ -34,9 +34,7 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 const register = require("./controllers/register")
-const login = require("./controllers/login")
 const peoples = require("./controllers/peoples")
-const connect_people = require("./controllers/connect_people")
 const email = require("./controllers/email")
 
 app.get("/", (req, res) => {
@@ -55,7 +53,15 @@ async function database() {
         app.post("/registration", upload.single("image"), register(users))
         // app.post("/login", login(users))
         app.post("/peoples", peoples(users))
-        app.post("/connect_people", connect_people(friends))
+        app.post("/connect_people", (req, res) => {
+            friends.findOne({ users: { $all: [req.body.user, req.body.people] } }).then(findResponse => {
+                if (findResponse === null) {
+                    friends.insertOne({ users: [req.body.user, req.body.people], lastMessage: Date.now() }).then(fullfilled => {
+                        res.send(fullfilled);
+                    })
+                }
+            }).catch(err => res.send(err.message))
+        })
 
         io.on("connection", async (socket) => {
 
@@ -70,6 +76,9 @@ async function database() {
             })
             socket.on("get_friends", (data, cb) => {
                 friends.find({ users: { $elemMatch: { $eq: data.id } } }).sort({ lastMessage: -1 }).toArray().then(friendsResponse => {
+                    friendsResponse.map(fr => {
+                        socket.join(fr._id.toString())
+                    })
                     cb(friendsResponse)
                 }).catch(err => console.log(err.message))
             })
@@ -82,12 +91,34 @@ async function database() {
                 socket.emit("new_friend_added")
             })
             socket.on("loggedIn", (data) => {
-                console.log(socket.id);
                 users.findOneAndUpdate({ _id: ObjectId(data._id) }, { $set: { active: true, socket: socket.id } }).then((res) => {
                     if (res.lastErrorObject.updatedExisting) {
                         socket.broadcast.emit("loggedOn", data._id)
                     }
                 }).catch(err => console.log(err.message))
+            })
+            socket.on("getChat", async (data, cb) => {
+                chat.find({ friend_id: data._id }).toArray().then(res => {
+                    cb({ chat: res })
+                })
+            })
+            socket.on("sentMessage", (data,cb) => {
+                chat.insertOne({
+                    friend_id: data.id,
+                    sender: data.sender,
+                    reciever: data.reciever,
+                    message: data.message,
+                    lastMessage: Date.now()
+                }).then(res => {
+                    if (res.acknowledged) {
+                        friends.updateOne({ _id: ObjectId(data.id) }, { $set: { lastMessage: Date.now() } }).then(f => {
+                            if (f.modifiedCount) {
+                                io.to(data.id).emit("message_sent")
+                                cb("done")
+                            }
+                        })
+                    }
+                })
             })
 
             socket.on("disconnect", () => {

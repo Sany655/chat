@@ -1,28 +1,32 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import Friend from './Friend'
 
 const Friends = () => {
-    const [friends, setFriends] = useState([])
+    // const [friends, setFriends] = useState([])
     const user = useSelector(store => store.user)
     const url = useSelector(store => store.url)
     const [callingFriends, setCallingFriends] = useState(false)
     const socket = useSelector(store => store.socket)
-    
+    const activeChatUser = useSelector(store => store.activeChatUser)
+    const friends = useSelector(store => store.friends)
+    const dispatch = useDispatch()
+
+
     useEffect(() => {
         socket.on("new_friend_added", () => {
             setCallingFriends(true)
-        })    
-    },[])
+        })
+    }, [])
     useEffect(() => {
-        socket.emit("get_friends",{id:user._id}, (data) => {
-            setFriends(data)
+        socket.emit("get_friends", { id: user._id }, (data) => {
+            dispatch({type:"GET_FRIENDS",payload:data})
         })
     }, [callingFriends])
 
     return (
-        <div className="d-none d-md-block col-md-3">
+        <div className="d-none d-lg-block col-lg-3">
             <div className="card" style={{ height: "90vh" }}>
                 <div className="card-body overflow-auto">
                     <div className="card mb-2">
@@ -33,7 +37,7 @@ const Friends = () => {
                     </div>
                     <ul className="list-group overflow-auto">
                         {
-                            friends.map(friend => <Friend key={friend._id} friend={friend} />)
+                            friends.map(friend => <Friend key={friend._id} friend={friend} activeChatUser={activeChatUser === friend._id ? activeChatUser : null} />)
                         }
                     </ul>
                 </div>

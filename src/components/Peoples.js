@@ -1,19 +1,20 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 const Peoples = () => {
-    const [peoples, setPeoples] = useState([])
+    const peoples = useSelector(store => store.peoples)
+    const friends = useSelector(store => store.friends)
     const user = useSelector(store => store.user)
     const [callPeoples, setCallPeoples] = useState(false)
     const socket = useSelector(store => store.socket)
     const url = useSelector(store => store.url)
+    const dispatch = useDispatch()
     useEffect(() => {
         axios.post("/peoples", { _id: user._id }).then(res => {
-            setPeoples(res.data);
-            setCallPeoples(false)
-        }).catch(err => console.log(err.message));
+            dispatch({type:"GET_PEOPLES",payload:res.data})
+        }).catch(err => console.log(err.message)).finally(() => setCallPeoples(false));
     }, [callPeoples, user._id]);
 
     socket.on("newUserFound", () => {
@@ -30,7 +31,7 @@ const Peoples = () => {
     }
 
     return (
-        <div className="d-none d-md-block col-md-3">
+        <div className="d-none d-lg-block col-lg-3">
             <div className="card" style={{ height: "90vh" }}>
                 <div className="card-header">
                     <h3 className="p-2">Peoples</h3>
@@ -39,7 +40,7 @@ const Peoples = () => {
                 <div className="card-body overflow-auto">
                     <ul className="list-group">
                         {
-                            peoples.map(people => (
+                            peoples.map(people => friends.find(friend => friend.users.find(id => id!==user._id)===people._id)?null:(
                                 <li key={people._id} className="list-group-item d-flex align-items-center justify-content-between gap-2 overflow-auto">
                                     <div className='d-flex align-items-start justify-content-between gap-2'>
                                         <img src={url + "/images/" + people.image} style={{ width: "40px", height: "40px" }} className="rounded-circle" alt="" />

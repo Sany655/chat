@@ -11,7 +11,11 @@ const initialState = {
     auth: localStorage.getItem("user") ? true : false,
     user: localStorage.getItem("user") ? user : {},
     socket: io.connect(urls),
-    url: urls
+    url: urls,
+    activeChatUser: "",
+    friends: [],
+    peoples: [],
+    callingFriends: false
 }
 
 const Reducers = (state = initialState, action) => {
@@ -30,9 +34,24 @@ const Reducers = (state = initialState, action) => {
             return {
                 ...state,
                 auth: false,
-                socket:socket,
+                socket: socket,
                 user: {}
             };
+        case "SELECT_CHAT":
+            return {
+                ...state,
+                activeChatUser: action.payload
+            }
+        case "GET_FRIENDS":
+            return {
+                ...state,
+                friends: action.payload
+            }
+        case "GET_PEOPLES":
+            return {
+                ...state,
+                peoples: action.payload
+            }
 
         default: return state;
     }
