@@ -53,15 +53,6 @@ async function database() {
         app.post("/registration", upload.single("image"), register(users))
         // app.post("/login", login(users))
         app.post("/peoples", peoples(users))
-        app.post("/connect_people", (req, res) => {
-            friends.findOne({ users: { $all: [req.body.user, req.body.people] } }).then(findResponse => {
-                if (findResponse === null) {
-                    friends.insertOne({ users: [req.body.user, req.body.people], lastMessage: Date.now() }).then(fullfilled => {
-                        res.send(fullfilled);
-                    })
-                }
-            }).catch(err => res.send(err.message))
-        })
 
         io.on("connection", async (socket) => {
 
@@ -73,6 +64,21 @@ async function database() {
                 users.findOneAndUpdate(form, { $set: { active: true, socket: socketId } }).then(loginResponse => {
                     cb(loginResponse);
                 }).catch(err => cb(err.message))
+            })
+            socket.on("connect_people", (req) => {
+                friends.findOne({ users: { $all: [req.user, req.people] } }).then(findResponse => {
+                    if (findResponse === null) {
+                        friends.insertOne({ users: [req.user, req.people], lastMessage: Date.now() }).then(async (fullfilled) => {
+                            if (fullfilled.acknowledged) {
+                                const user1SocketId = await users.findOne({_id:ObjectId(req.user)})
+                                io.to(user1SocketId.socket).emit("new_friend_added_from_people")
+                                const user2SocketId = await users.findOne({_id:ObjectId(req.people)})
+                                io.to(user2SocketId.socket).emit("new_friend_added_from_people")
+                                // socket.emit("new_friend_added_from_people")
+                            }
+                        })
+                    }
+                }).catch(err => console.log(err.message))
             })
             socket.on("get_friends", (data, cb) => {
                 friends.find({ users: { $elemMatch: { $eq: data.id } } }).sort({ lastMessage: -1 }).toArray().then(friendsResponse => {
@@ -87,9 +93,6 @@ async function database() {
                     cb(data)
                 })
             })
-            socket.on("new_friend_added", () => {
-                socket.emit("new_friend_added")
-            })
             socket.on("loggedIn", (data) => {
                 users.findOneAndUpdate({ _id: ObjectId(data._id) }, { $set: { active: true, socket: socket.id } }).then((res) => {
                     if (res.lastErrorObject.updatedExisting) {
@@ -102,7 +105,7 @@ async function database() {
                     cb({ chat: res })
                 })
             })
-            socket.on("sentMessage", (data,cb) => {
+            socket.on("sentMessage", (data, cb) => {
                 chat.insertOne({
                     friend_id: data.id,
                     sender: data.sender,

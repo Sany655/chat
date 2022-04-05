@@ -15,7 +15,8 @@ const initialState = {
     activeChatUser: "",
     friends: [],
     peoples: [],
-    callingFriends: false
+    callingFriends: false,
+    peopleShow: false,
 }
 
 const Reducers = (state = initialState, action) => {
@@ -42,6 +43,11 @@ const Reducers = (state = initialState, action) => {
                 ...state,
                 activeChatUser: action.payload
             }
+        case "DESELECT_CHAT":
+            return {
+                ...state,
+                activeChatUser: ""
+            }
         case "GET_FRIENDS":
             return {
                 ...state,
@@ -51,6 +57,11 @@ const Reducers = (state = initialState, action) => {
             return {
                 ...state,
                 peoples: action.payload
+            }
+        case "TOGGLE_PEOPLE":
+            return {
+                ...state,
+                peopleShow: !state.peopleShow
             }
 
         default: return state;

@@ -23,8 +23,6 @@ const ReactRoutes = () => {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<PrivateRoute><Inbox /></PrivateRoute>} />
-                <Route path="/peoples" element={<PrivateRoute><Peoples /></PrivateRoute>} />
-                <Route path="/friends" element={<PrivateRoute><Friends /></PrivateRoute>} />
                 <Route path='/login' element={<PublicRoute><Login /></PublicRoute>} />
                 <Route path='/register/*' element={<PublicRoute><Register /></PublicRoute>} />
             </Routes>
