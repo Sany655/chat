@@ -34,6 +34,8 @@ const Reducers = (state = initialState, action) => {
             const socket = io.connect(urls)
             return {
                 ...state,
+                friends: [],
+                peoples: [],
                 auth: false,
                 socket: socket,
                 user: {}

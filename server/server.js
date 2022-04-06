@@ -116,7 +116,7 @@ async function database() {
                     if (res.acknowledged) {
                         friends.updateOne({ _id: ObjectId(data.id) }, { $set: { lastMessage: Date.now() } }).then(f => {
                             if (f.modifiedCount) {
-                                io.to(data.id).emit("message_sent")
+                                io.to(data.id).emit("message_sent",data.id)
                                 cb("done")
                             }
                         })
