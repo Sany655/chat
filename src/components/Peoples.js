@@ -26,6 +26,10 @@ const Peoples = ({ peoplesRef }) => {
         setCallPeoples(true)
     })
 
+    socket.on("conv_deleted", () => {
+        setCallPeoples(true)
+    })
+
     const connectPeople = (_id) => {
         socket.emit("connect_people", { user: user._id, people: _id })
     }
@@ -43,20 +47,24 @@ const Peoples = ({ peoplesRef }) => {
                 <div className="card-body overflow-auto">
                     <ul className="list-group">
                         {
-                            peoples.map(people => friends.find(friend => friend.users.find(id => id !== user._id) === people._id) ? null : (
-                                <li key={people._id} className="list-group-item d-flex align-items-center justify-content-between gap-2 overflow-auto">
-                                    <div className='d-flex align-items-start justify-content-between gap-2'>
-                                        <img src={url + "/images/" + people.image} style={{ width: "40px", height: "40px" }} className="rounded-circle" alt="" />
-                                        <p className='m-0'><Link className='text-decoration-none' to="/">{people.name} {people._id}</Link></p>
-                                    </div>
-                                    <button className="btn btn-primary btn-sm rounded-circle" onClick={() => connectPeople(people._id)}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-person-plus-fill" viewBox="0 0 16 16">
-                                            <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
-                                            <path fillRule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z" />
-                                        </svg>
-                                    </button>
-                                </li>
-                            ))
+                            peoples.length>0 ? (
+                                peoples.map(people => friends.find(friend => friend.users.find(id => id !== user._id) === people._id) ? null : (
+                                    <li key={people._id} className="list-group-item d-flex align-items-center justify-content-between gap-2 overflow-auto">
+                                        <div className='d-flex align-items-start justify-content-between gap-2'>
+                                            <img src={people.image ? url + "/images/" + people.image : "./image/default_user.png"} style={{ width: "40px", height: "40px" }} className="rounded-circle" alt="" />
+                                            <p className='m-0'><Link className='text-decoration-none' to="/">{people.name}</Link></p>
+                                        </div>
+                                        <button className="btn btn-primary btn-sm rounded-circle" onClick={() => connectPeople(people._id)}>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-person-plus-fill" viewBox="0 0 16 16">
+                                                <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                                                <path fillRule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z" />
+                                            </svg>
+                                        </button>
+                                    </li>
+                                ))
+                            ):(
+                                <p className="d-flex justify-content-center align-items-center h-100">Reload the page agait, if it does'nt help, try letter</p>
+                            )
                         }
                     </ul>
                 </div>

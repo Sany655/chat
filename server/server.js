@@ -11,7 +11,8 @@ const server = http.createServer(app)
 app.use('/images', express.static(__dirname + '/images'));
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:3000", // development mode
+        // origin: "http://localhost:3000", // development mode
+        origin: ["http://192.168.0.116:3000", "http://localhost:3000", "https://calling-dudes.web.app"], // development mode
         // origin: "https://calling-dudes.web.app", // production mode
         // methods: ["GET", "POST"]
     }
@@ -70,9 +71,9 @@ async function database() {
                     if (findResponse === null) {
                         friends.insertOne({ users: [req.user, req.people], lastMessage: Date.now() }).then(async (fullfilled) => {
                             if (fullfilled.acknowledged) {
-                                const user1SocketId = await users.findOne({_id:ObjectId(req.user)})
+                                const user1SocketId = await users.findOne({ _id: ObjectId(req.user) })
                                 io.to(user1SocketId.socket).emit("new_friend_added_from_people")
-                                const user2SocketId = await users.findOne({_id:ObjectId(req.people)})
+                                const user2SocketId = await users.findOne({ _id: ObjectId(req.people) })
                                 io.to(user2SocketId.socket).emit("new_friend_added_from_people")
                                 // socket.emit("new_friend_added_from_people")
                             }
@@ -116,12 +117,22 @@ async function database() {
                     if (res.acknowledged) {
                         friends.updateOne({ _id: ObjectId(data.id) }, { $set: { lastMessage: Date.now() } }).then(f => {
                             if (f.modifiedCount) {
-                                io.to(data.id).emit("message_sent",data.id)
+                                io.to(data.id).emit("message_sent", data.id)
                                 cb("done")
                             }
                         })
                     }
                 })
+            })
+            socket.on("delete_frnd_conv",async (data, cb) => {
+                friends.deleteOne({ _id: ObjectId(data._id) }).then((frRes) => {
+                    if (frRes.deletedCount) {
+                        chat.deleteMany({ friend_id: data._id }).then((chatRes) => {
+                            socket.emit("conv_deleted")
+                            io.to(data.friend.socket).emit("conv_deleted")
+                        }).catch(err => console.log(err.message))
+                    }
+                }).catch(err => console.log(err.message))
             })
 
             socket.on("disconnect", () => {

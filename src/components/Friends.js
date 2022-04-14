@@ -9,17 +9,39 @@ const Friends = () => {
     const [callingFriends, setCallingFriends] = useState(false)
     const socket = useSelector(store => store.socket)
     const activeChatUser = useSelector(store => store.activeChatUser)
+    const isChatSelected = useSelector(store => store.isChatSelected)
     const friends = useSelector(store => store.friends)
     const dispatch = useDispatch()
-    
-    socket.on("new_friend_added_from_people", () => {
-        setCallingFriends(true)
-    })
+
+
     useEffect(() => {
         socket.emit("get_friends", { id: user._id }, (data) => {
             dispatch({ type: "GET_FRIENDS", payload: data })
         })
-    }, [callingFriends,user])
+    }, [callingFriends, user])
+
+    useEffect(() => {
+        // console.log(activeChatUser);
+        socket.on("new_friend_added_from_people", () => {
+            setCallingFriends(true)
+        })
+    }, [])
+
+    socket.on("conv_deleted", () => {
+        setCallingFriends(true)
+    })
+
+    // useEffect(() => {
+    //     console.log(activeChatUser._id);
+    //     socket.on("conv_deleted", (data) => {
+    //         setCallingFriends(true)
+    //         console.log(activeChatUser._id + " === " + data._id);
+    //         console.log(activeChatUser._id + " === " + data);
+    //         if (Object.keys(activeChatUser).length && activeChatUser._id === data) {
+    //             dispatch({ type: "IS_CHAT_SELECTED_FALSE" })
+    //         }
+    //     })
+    // }, [activeChatUser])
 
     return (
         <div className="col-lg-3 col-12">
@@ -31,7 +53,7 @@ const Friends = () => {
                             <h3 className='m-0 text-center'>{user.name}</h3>
                         </div>
                         <div className="card-footer d-flex justify-content-between align-items-center">
-                            <a className="d-lg-none" onClick={() => dispatch({type:"TOGGLE_PEOPLE"})}>
+                            <a className="d-lg-none" onClick={() => dispatch({ type: "TOGGLE_PEOPLE" })}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-people-fill" viewBox="0 0 16 16">
                                     <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
                                     <path fillRule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z" />
@@ -48,7 +70,11 @@ const Friends = () => {
                     </div>
                     <ul className="list-group overflow-auto">
                         {
-                            friends.map(friend => <Friend key={friend._id} friend={friend} activeChatUser={activeChatUser === friend._id ? activeChatUser : null} />)
+                            friends.length > 0 ? (
+                                friends.map(friend => <Friend key={friend._id} friend={friend} />)
+                            ) : (
+                                <p className="d-flex justify-content-center align-items-center h-100 gap-2">Add a friend from people <img src="./svg/people-fill.svg" alt="" /></p>
+                            )
                         }
                     </ul>
                 </div>
