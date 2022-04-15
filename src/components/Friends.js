@@ -9,7 +9,6 @@ const Friends = () => {
     const [callingFriends, setCallingFriends] = useState(false)
     const socket = useSelector(store => store.socket)
     const activeChatUser = useSelector(store => store.activeChatUser)
-    const isChatSelected = useSelector(store => store.isChatSelected)
     const friends = useSelector(store => store.friends)
     const dispatch = useDispatch()
 
@@ -27,9 +26,16 @@ const Friends = () => {
         })
     }, [])
 
-    socket.on("conv_deleted", () => {
-        setCallingFriends(true)
-    })
+    useEffect(() => {
+        socket.on("conv_deleted_for_user", () => {
+            setCallingFriends(true)
+            dispatch({type:"DESELECT_CHAT"})
+        })
+        socket.on("conv_deleted_for_friend", () => {
+            alert("someone deleted you")
+            window.location.reload()
+        })
+    }, [])
 
     // useEffect(() => {
     //     console.log(activeChatUser._id);
@@ -53,19 +59,26 @@ const Friends = () => {
                             <h3 className='m-0 text-center'>{user.name}</h3>
                         </div>
                         <div className="card-footer d-flex justify-content-between align-items-center">
-                            <a className="d-lg-none" onClick={() => dispatch({ type: "TOGGLE_PEOPLE" })}>
+                            <i role={"button"} className="bi bi-people-fill d-lg-none fs-4" onClick={() => dispatch({ type: "TOGGLE_PEOPLE" })}></i>
+                            {/* <a className="d-lg-none" onClick={() => dispatch({ type: "TOGGLE_PEOPLE" })}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-people-fill" viewBox="0 0 16 16">
                                     <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
                                     <path fillRule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z" />
                                     <path d="M4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z" />
                                 </svg>
-                            </a>
+                            </a> */}
                             <a href="#" title='logout' onClick={() => dispatch({ type: "LOGOUT" })}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-box-arrow-right" viewBox="0 0 16 16">
                                     <path fillRule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z" />
                                     <path fillRule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
                                 </svg>
                             </a>
+                            {/* <a href="#" title='logout' onClick={() => dispatch({ type: "LOGOUT" })}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                                    <path fillRule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z" />
+                                    <path fillRule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
+                                </svg>
+                            </a> */}
                         </div>
                     </div>
                     <ul className="list-group overflow-auto">
@@ -73,7 +86,7 @@ const Friends = () => {
                             friends.length > 0 ? (
                                 friends.map(friend => <Friend key={friend._id} friend={friend} />)
                             ) : (
-                                <p className="d-flex justify-content-center align-items-center h-100 gap-2">Add a friend from people <img src="./svg/people-fill.svg" alt="" /></p>
+                                <p className="d-flex justify-content-center align-items-center h-100 gap-2">Add a friend from people <i role={"button"} className="bi bi-people-fill d-lg-none fs-4" onClick={() => dispatch({ type: "TOGGLE_PEOPLE" })}></i></p>
                             )
                         }
                     </ul>

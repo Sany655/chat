@@ -2,13 +2,17 @@ import axios from "axios";
 import { createStore } from "redux";
 import io from "socket.io-client";
 
-// const urls = "https://calling-dudes.herokuapp.com" // production
 let urls;
-if (window.innerWidth<720) {
-    urls = "http://192.168.0.116:5000"
-    alert(urls)
-}else{
-    urls = "http://localhost:5000" // development
+if (window.location.hostname === 'localhost') {
+    if (window.innerWidth < 720) {
+        urls = "http://192.168.0.116:5000"
+        alert(urls)
+    } else {
+        urls = "http://localhost:5000" // development
+
+    }
+} else {
+    urls = "https://calling-dudes.herokuapp.com" // production
 }
 axios.defaults.baseURL = urls
 const user = JSON.parse(localStorage.getItem("user"))
@@ -23,7 +27,6 @@ const initialState = {
     peoples: [],
     callingFriends: false,
     peopleShow: false,
-    isChatSelected: false,
 }
 
 const Reducers = (state = initialState, action) => {
@@ -56,16 +59,6 @@ const Reducers = (state = initialState, action) => {
             return {
                 ...state,
                 activeChatUser: {}
-            }
-        case "IS_CHAT_SELECTED_TRUE":
-            return {
-                ...state,
-                isChatSelected: true,
-            }
-        case "IS_CHAT_SELECTED_FALSE":
-            return {
-                ...state,
-                isChatSelected: false,
             }
         case "GET_FRIENDS":
             return {

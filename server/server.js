@@ -128,8 +128,8 @@ async function database() {
                 friends.deleteOne({ _id: ObjectId(data._id) }).then((frRes) => {
                     if (frRes.deletedCount) {
                         chat.deleteMany({ friend_id: data._id }).then((chatRes) => {
-                            socket.emit("conv_deleted")
-                            io.to(data.friend.socket).emit("conv_deleted")
+                            socket.emit("conv_deleted_for_user")
+                            io.to(data.friend.socket).emit("conv_deleted_for_friend")
                         }).catch(err => console.log(err.message))
                     }
                 }).catch(err => console.log(err.message))

@@ -14,7 +14,6 @@ const ChatBox = () => {
     const [incommingMessage, setIncommingMessage] = useState(false)
     const [msg, setMsg] = useState("")
     const chatBody = useRef()
-    const isChatSelected = useSelector(store => store.isChatSelected)
 
     useEffect(() => {
         socket.on("loggedOn", (data) => {
@@ -43,7 +42,7 @@ const ChatBox = () => {
     }, [])
 
     useEffect(() => {
-        if (isChatSelected && Object.keys(activeChatUser).length) {
+        if (Object.keys(activeChatUser).length) {
             const frndId = activeChatUser.users.find(f => f !== user._id);
             socket.emit("get_friend", frndId, (data) => {
                 setChatUser(data)
@@ -54,7 +53,7 @@ const ChatBox = () => {
 
     const sentMesssage = (e) => {
         e.preventDefault()
-        if (msg&&isChatSelected && Object.keys(activeChatUser).length) {
+        if (msg && Object.keys(activeChatUser).length) {
             socket.emit("sentMessage", { id: activeChatUser._id, sender: user._id, reciever: chatUser._id, message: msg }, (data) => {
                 if (data === "done") {
                     setMsg("")
@@ -71,6 +70,16 @@ const ChatBox = () => {
         // console.log(devices);
     }
 
+    function deleteFriend() {
+        const con = window.confirm("are you sure to delete this friend and it's conversation")
+        if (con) {
+            activeChatUser.friend = chatUser;
+            socket.emit("delete_frnd_conv", activeChatUser, (data) => {
+                alert(data)
+            })
+        }
+    }
+
     return (
         <div className="col-lg-6 col-12">
             <div className="card" style={{ height: "90vh" }}>
@@ -80,7 +89,7 @@ const ChatBox = () => {
                             <path fillRule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z" />
                         </svg></div>
                         {
-                            isChatSelected && Object.keys(activeChatUser).length ? (
+                            Object.keys(activeChatUser).length ? (
                                 <>
                                     <img src={chatUser.image && url + "/images/" + chatUser.image} alt="" className="rounded-circle" width={65} height={65} />
                                     <div className="">
@@ -105,18 +114,19 @@ const ChatBox = () => {
                                 <li><a class="dropdown-item" href="#">Something else here</a></li>
                             </ul>
                         </div> */}
-                        {isChatSelected && Object.keys(activeChatUser).length ? (
+                        {Object.keys(activeChatUser).length ? (
                             <>
                                 <button className="btn btn-sm btn-primary" onClick={startingCall}>call</button>
                                 {
                                     chatUser.active ? <p className="rounded-circle bg-success m-0" style={{ width: "15px", height: "15px" }}></p> : <p className="rounded-circle m-0" style={{ width: "15px", height: "15px", background: "#e0e0e0" }}></p>
                                 }
+                                <i role="button" className="bi bi-person-x-fill fs-4" onClick={deleteFriend}></i>
                             </>
                         ) : null}
                     </div>
                 </div>
                 <div className="card-body overflow-auto" ref={chatBody}>
-                    {isChatSelected && Object.keys(activeChatUser).length ? (
+                    {Object.keys(activeChatUser).length ? (
                         chatMessages.length > 0 ? (
 
                             chatMessages.map(message => (
@@ -141,7 +151,7 @@ const ChatBox = () => {
                 </div>
                 <form onSubmit={sentMesssage}>
                     <div className="card-footer d-flex align-items-center gap-2">
-                        <input required type="text" className="form-control" placeholder='write message' value={msg} onChange={(e) => setMsg(e.target.value)} disabled={isChatSelected && Object.keys(activeChatUser).length ? false : true} />
+                        <input required type="text" className="form-control" placeholder='write message' value={msg} onChange={(e) => setMsg(e.target.value)} disabled={Object.keys(activeChatUser).length ? false : true} />
                         <button disabled={msg ? false : true} type="submit" className="btn btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-send" viewBox="0 0 16 16">
                             <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z" />
                         </svg></button>
