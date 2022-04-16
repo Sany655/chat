@@ -11,7 +11,7 @@ const Inbox = () => {
     <div className="container-fluid my-4">
       <div className="row">
         {window.innerWidth < 992 ? (
-          peopleShow ? <Peoples /> : activeChatUser ? <ChatBox /> : <Friends />
+          peopleShow ? <Peoples /> : (Object.keys(activeChatUser).length ? <ChatBox /> : <Friends />)
         ) : (
           <>
             <Friends />

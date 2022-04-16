@@ -9,7 +9,6 @@ if (window.location.hostname === 'localhost') {
         alert(urls)
     } else {
         urls = "http://localhost:5000" // development
-
     }
 } else {
     urls = "https://calling-dudes.herokuapp.com" // production
