@@ -6,6 +6,7 @@ import Inbox from "./components/Inbox";
 import Loading from './components/Loading';
 import Login from "./components/Login";
 import Peoples from './components/Peoples';
+import Profile from './components/Profile';
 import Register from "./components/Register";
 
 const ReactRoutes = () => {
@@ -23,6 +24,7 @@ const ReactRoutes = () => {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<PrivateRoute><Inbox /></PrivateRoute>} />
+                <Route path="/profile/:id" element={<PrivateRoute><Profile /></PrivateRoute>} />
                 <Route path='/login' element={<PublicRoute><Login /></PublicRoute>} />
                 <Route path='/register/*' element={<PublicRoute><Register /></PublicRoute>} />
             </Routes>

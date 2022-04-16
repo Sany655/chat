@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 const ChatBox = () => {
     const dispatch = useDispatch()
@@ -94,7 +95,7 @@ const ChatBox = () => {
                                 <>
                                     <img src={chatUser.image && url + "/images/" + chatUser.image} alt="" className="rounded-circle" width={65} height={65} />
                                     <div className="">
-                                        <h5>{chatUser.name}</h5>
+                                        <h5><Link className='text-decoration-none' to={'/profile/' + chatUser._id}>{chatUser.name}</Link></h5>
                                     </div>
                                 </>
                             ) : null
@@ -135,6 +136,18 @@ const ChatBox = () => {
                 <form onSubmit={sentMesssage}>
                     <div className="card-footer d-flex align-items-center gap-2">
                         <input required type="text" className="form-control" placeholder='write message' value={msg} onChange={(e) => setMsg(e.target.value)} disabled={Object.keys(activeChatUser).length ? false : true} />
+                        {/* emoji button will be here soon inSha'Allah */}
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                Dropdown button
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                <li><a class="dropdown-item" href="#">Action</a></li>
+                                <li><a class="dropdown-item" href="#">Another action</a></li>
+                                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                            </ul>
+                        </div>
+                        {/* emoji button will be here soon inSha'Allah */}
                         <button disabled={msg ? false : true} type="submit" className="btn btn-primary">
                             <i className="bi bi-send"></i>
                         </button>

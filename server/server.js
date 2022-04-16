@@ -54,6 +54,12 @@ async function database() {
         app.post("/registration", upload.single("image"), register(users))
         // app.post("/login", login(users))
         app.post("/peoples", peoples(users))
+        app.get("/search-people", async (req, res) => {
+            users.find({ name: {"$regex":req.query.people,"$options":"i"} }).limit(10).toArray().then(fullfilled => {
+            // users.find({ name: req.query.people }).limit(10).toArray().then(fullfilled => {
+                res.send(fullfilled);
+            }).catch(err => console.log(err.message))
+        })
 
         io.on("connection", async (socket) => {
 
@@ -124,7 +130,7 @@ async function database() {
                     }
                 })
             })
-            socket.on("delete_frnd_conv",async (data, cb) => {
+            socket.on("delete_frnd_conv", async (data, cb) => {
                 friends.deleteOne({ _id: ObjectId(data._id) }).then((frRes) => {
                     if (frRes.deletedCount) {
                         chat.deleteMany({ friend_id: data._id }).then((chatRes) => {
