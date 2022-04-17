@@ -26,7 +26,7 @@ const Friend = ({ friend }) => {
     }, [])
 
     function getFriendWithSocket(frndId) {
-        socket.emit("get_friend", frndId, (data) => {
+        socket.emit("get_user", frndId, (data) => {
             setFrnd(data)
         })
     }

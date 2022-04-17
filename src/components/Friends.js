@@ -1,6 +1,7 @@
 import axios from 'axios'
 import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
 import Friend from './Friend'
 
 const Friends = () => {
@@ -56,7 +57,9 @@ const Friends = () => {
                     <div className="card mb-2">
                         <div className="card-body p-2 d-flex flex-column align-items-center">
                             <img width={"120px"} height="120px" src={url + "/images/" + user.image} alt="" className="rounded-circle d-block" />
-                            <h3 className='m-0 text-center'>{user.name}</h3>
+                            <h3 className='m-0 text-center'>
+                                <Link to={'/profile/'+user._id} className="text-decoration-none">{user.name}</Link>
+                            </h3>
                         </div>
                         <div className="card-footer d-flex justify-content-between align-items-center">
                             <a href="#" title='peoples' onClick={() => dispatch({ type: "TOGGLE_PEOPLE" })}>

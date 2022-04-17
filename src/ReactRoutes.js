@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import EditProfile from './components/EditProfile';
 import Friends from './components/Friends';
 import Inbox from "./components/Inbox";
 import Loading from './components/Loading';
@@ -25,6 +26,7 @@ const ReactRoutes = () => {
             <Routes>
                 <Route path="/" element={<PrivateRoute><Inbox /></PrivateRoute>} />
                 <Route path="/profile/:id" element={<PrivateRoute><Profile /></PrivateRoute>} />
+                <Route path="/profile/:id/edit" element={<PrivateRoute><EditProfile /></PrivateRoute>} />
                 <Route path='/login' element={<PublicRoute><Login /></PublicRoute>} />
                 <Route path='/register/*' element={<PublicRoute><Register /></PublicRoute>} />
             </Routes>

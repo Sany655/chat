@@ -44,7 +44,7 @@ const ChatBox = () => {
     useEffect(() => {
         if (Object.keys(activeChatUser).length) {
             const frndId = activeChatUser.users.find(f => f !== user._id);
-            socket.emit("get_friend", frndId, (data) => {
+            socket.emit("get_user", frndId, (data) => {
                 setChatUser(data)
                 setLoggedOn(false)
             })
@@ -138,14 +138,72 @@ const ChatBox = () => {
                         <input required type="text" className="form-control" placeholder='write message' value={msg} onChange={(e) => setMsg(e.target.value)} disabled={Object.keys(activeChatUser).length ? false : true} />
                         {/* emoji button will be here soon inSha'Allah */}
                         <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                Dropdown button
+                            <button className="btn" style={{ outline: "none", boxShadow: "none" }} type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" disabled={Object.keys(activeChatUser).length ? false : true}>
+                                &#128512;
                             </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                <li><a class="dropdown-item" href="#">Action</a></li>
+                            <div className="dropdown-menu p-0" onClick={e => e.stopPropagation()}>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128512;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128513;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128514;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128515;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128516;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128517;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128518;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128519;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128520;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128521;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128522;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128523;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128524;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128525;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128526;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128527;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128528;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128529;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128530;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128531;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128532;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128533;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128534;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128535;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128536;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128537;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128538;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128539;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128540;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128541;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128542;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128543;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128544;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128545;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128546;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128547;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128548;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128549;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128550;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128551;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128552;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128553;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128554;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128555;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128556;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128557;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128558;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128559;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128560;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128561;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128562;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128563;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128564;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128565;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128566;</small>
+                                <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128567;</small>
+                            </div>
+                            {/* <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                <li><a class="dropdown-item" href="#">&#129488;</a></li>
                                 <li><a class="dropdown-item" href="#">Another action</a></li>
                                 <li><a class="dropdown-item" href="#">Something else here</a></li>
-                            </ul>
+                            </ul> */}
                         </div>
                         {/* emoji button will be here soon inSha'Allah */}
                         <button disabled={msg ? false : true} type="submit" className="btn btn-primary">
@@ -153,8 +211,8 @@ const ChatBox = () => {
                         </button>
                     </div>
                 </form>
-            </div>
-        </div>
+            </div >
+        </div >
     )
 }
 

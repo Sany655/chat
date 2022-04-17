@@ -95,11 +95,6 @@ const Form = ({ form, setForm }) => {
                 <label htmlFor="name" className="form-label">Full name</label>
                 <input required type="text" className="form-control" id="name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
             </div>
-            {/* <div className="mb-3">
-                <label htmlFor="exampleInputEmail1" className="form-label">Email address</label>
-                <input required type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
-                <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
-            </div> */}
             <div className="mb-3">
                 <label htmlFor="phone" className="form-label">Phone number</label>
                 <input required type="number" className="form-control" id="phone" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} />

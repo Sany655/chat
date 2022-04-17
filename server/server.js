@@ -95,7 +95,7 @@ async function database() {
                     cb(friendsResponse)
                 }).catch(err => console.log(err.message))
             })
-            socket.on("get_friend", (id, cb) => {
+            socket.on("get_user", (id, cb) => {
                 users.findOne({ _id: ObjectId(id) }).then(data => {
                     cb(data)
                 })
