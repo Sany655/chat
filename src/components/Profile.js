@@ -24,9 +24,11 @@ const Profile = () => {
                     </Link>
                     {
                         user._id === pageUser._id ? (
-                            <Link href="#" to={'/profile/'+user._id+'/edit'} className="ms-2 fs-4" title='Edit profile'>
-                                <i class="bi bi-pencil-square"></i>
-                            </Link>
+                            <>
+                                <Link href="#" to={'/profile/' + user._id + '/edit'} className="ms-2 fs-4" title='Edit profile'>
+                                    <i class="bi bi-pencil-square"></i>
+                                </Link>
+                            </>
                         ) : null
                     }
                 </div>

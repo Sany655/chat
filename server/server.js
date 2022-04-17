@@ -24,7 +24,7 @@ const upload = multer({
         },
         filename: function (req, file, cb) {
             const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-            cb(null, uniqueSuffix + "-" + file.originalname)
+            cb(null, uniqueSuffix + "-" + req.body.name + "-" + file.originalname)
         }
     })
 })
@@ -52,11 +52,37 @@ async function database() {
 
         app.post("/email", email(users))
         app.post("/registration", upload.single("image"), register(users))
-        // app.post("/login", login(users))
+        app.post("/update-profile", upload.single("image"), (req, res) => {
+            if (req.file) {
+                req.body.image = req.file.filename;
+                const path = __dirname + '/images/' + req.body.old_image
+                if (fs.existsSync(path)) {
+                    try {
+                        fs.unlinkSync(path)
+                    } catch (error) {
+                        console.log(error.message);
+                    }
+                } else {
+                    console.log(path + " path not exists");
+                }
+            }
+            const userId = req.body._id;
+            delete req.body._id;
+            delete req.body.old_image;
+            users.updateOne({ _id: ObjectId(userId) }, { $set: req.body }).then(insertRes => {
+                if (insertRes.modifiedCount) {
+                    users.findOne({_id:ObjectId(userId)}).then((userRes) => {
+                        res.send(userRes)
+                    })
+                } else {
+                    res.send(insertRes)
+                }
+            }).catch(err => res.send(err.message))
+        })
         app.post("/peoples", peoples(users))
         app.get("/search-people", async (req, res) => {
-            users.find({ name: {"$regex":req.query.people,"$options":"i"} }).limit(10).toArray().then(fullfilled => {
-            // users.find({ name: req.query.people }).limit(10).toArray().then(fullfilled => {
+            users.find({ name: { "$regex": req.query.people, "$options": "i" } }).limit(10).toArray().then(fullfilled => {
+                // users.find({ name: req.query.people }).limit(10).toArray().then(fullfilled => {
                 res.send(fullfilled);
             }).catch(err => console.log(err.message))
         })

@@ -20,7 +20,7 @@ const Register = () => {
     function query(e) {
         e.preventDefault()
         setLoading(true)
-        axios.post("/email", {email:form.email}).then((res) => {
+        axios.post("/email", { email: form.email }).then((res) => {
             if (res.data) {
                 setError("Email has already an account, try to login")
                 setUniqueEmail(false)
@@ -70,10 +70,10 @@ const Register = () => {
                         {response && <p className="alert alert-success">{response}</p>}
                         <hr />
                         <Routes>
-                            <Route path='/' element={uniqueEmail?<Form form={form} setForm={setForm} />:<EmailEl form={form} setForm={setForm} />} />
+                            <Route path='/' element={uniqueEmail ? <Form form={form} setForm={setForm} /> : <EmailEl form={form} setForm={setForm} />} />
                         </Routes>
                         <small className="me-3">Already have an account? <Link to={'/login'}>Login</Link></small>
-                        <button type={!loading?"submit":"button"} className="btn btn-primary">{loading ? (
+                        <button type={!loading ? "submit" : "button"} className="btn btn-primary">{loading ? (
                             <span>
                                 Submitting...
                                 <div className="spinner-border" style={{ width: 20, height: 20 }} role="status">
@@ -89,6 +89,7 @@ const Register = () => {
 }
 
 const Form = ({ form, setForm }) => {
+    const [showPassword, setShowPassword] = useState(false)
     return (
         <div>
             <div className="mb-3">
@@ -105,7 +106,12 @@ const Form = ({ form, setForm }) => {
             </div>
             <div className="mb-3">
                 <label htmlFor="exampleInputPassword1" className="form-label">Password</label>
-                <input required type="password" className="form-control" id="exampleInputPassword1" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />
+                <div className="input-group">
+                    <input required type={showPassword ? "text" : "password"} className="form-control" id="exampleInputPassword1" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />
+                    <small className='input-group-text'>
+                        <i onClick={() => setShowPassword(!showPassword)} className={showPassword ? "bi bi-eye-slash" : "bi bi-eye"}></i>
+                    </small>
+                </div>
             </div>
         </div>
     )

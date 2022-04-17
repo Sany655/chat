@@ -12,6 +12,7 @@ const Login = () => {
     const [loading, setLoading] = useState(false)
     const socket = useSelector(store => store.socket)
     const dispatch = useDispatch()
+    const [showPassword, setShowPassword] = useState(false)
     const login = (e) => {
         setLoading(true)
         e.preventDefault();
@@ -56,7 +57,12 @@ const Login = () => {
                         </div>
                         <div className="mb-3">
                             <label htmlFor="exampleInputPassword1" className="form-label">Password</label>
-                            <input required value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} type="password" className="form-control" id="exampleInputPassword1" />
+                            <div className="input-group">
+                                <input required type={showPassword ? "text" : "password"} className="form-control" id="exampleInputPassword1" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />
+                                <small className='input-group-text'>
+                                    <i onClick={() => setShowPassword(!showPassword)} className={showPassword ? "bi bi-eye-slash" : "bi bi-eye"}></i>
+                                </small>
+                            </div>
                         </div>
                         <small className='me-3'>Not have an accout? <Link to={'/register'}>Register</Link></small>
                         <button type={!loading ? "submit" : "button"} className="btn btn-primary">{loading ? (
