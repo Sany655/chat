@@ -65,6 +65,8 @@ async function database() {
                 } else {
                     console.log(path + " path not exists");
                 }
+            }else{
+                req.body.image = req.body.old_image;
             }
             const userId = req.body._id;
             delete req.body._id;
