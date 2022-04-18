@@ -65,7 +65,7 @@ async function database() {
                 } else {
                     console.log(path + " path not exists");
                 }
-            }else{
+            } else {
                 req.body.image = req.body.old_image;
             }
             const userId = req.body._id;
@@ -73,7 +73,7 @@ async function database() {
             delete req.body.old_image;
             users.updateOne({ _id: ObjectId(userId) }, { $set: req.body }).then(insertRes => {
                 if (insertRes.modifiedCount) {
-                    users.findOne({_id:ObjectId(userId)}).then((userRes) => {
+                    users.findOne({ _id: ObjectId(userId) }).then((userRes) => {
                         res.send(userRes)
                     })
                 } else {
@@ -84,13 +84,26 @@ async function database() {
         app.post("/peoples", peoples(users))
         app.get("/search-people", async (req, res) => {
             users.find({ name: { "$regex": req.query.people, "$options": "i" } }).limit(10).toArray().then(fullfilled => {
-                // users.find({ name: req.query.people }).limit(10).toArray().then(fullfilled => {
                 res.send(fullfilled);
             }).catch(err => console.log(err.message))
         })
 
         io.on("connection", async (socket) => {
-
+            app.post("/delete-profile", async (req, res) => {
+                let friendsas;
+                ; (await friends.find({ users: { $elemMatch: { $eq: req.body.id } } }).toArray()).map(async (friend) => {
+                    await friends.deleteOne({ _id: ObjectId(friend._id) })
+                    await chat.deleteMany({ friend_id: friend._id })
+                })
+                const deleteUser = await users.findOneAndDelete({ _id: ObjectId(req.body.id) })
+                try {
+                    fs.unlinkSync(__dirname + "/images/" + deleteUser.value.image)
+                } catch (error) {
+                    console.log(error.message);
+                }
+                socket.broadcast.emit("newUserFound");
+                res.send("done")
+            })
             socket.on("registered", () => {
                 socket.broadcast.emit("newUserFound");
             })

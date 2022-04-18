@@ -1,5 +1,6 @@
+import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link, useParams } from 'react-router-dom'
 
 const Profile = () => {
@@ -8,12 +9,32 @@ const Profile = () => {
     const user = useSelector(store => store.user)
     const [pageUser, setPageUser] = useState({})
     const { id } = useParams()
+    const dispatch = useDispatch()
 
     useEffect(() => {
         socket.emit("get_user", id, (data) => {
             setPageUser(data)
         })
     }, [])
+
+    async function deleteProfile() {
+        const confirmation = window.confirm("are you suer to delete your profile and it's connections and conversations");
+        if (confirmation) {
+            if (pageUser._id === user._id) {
+                axios.post("/delete-profile", { id: pageUser._id }).then(res => {
+                    console.log(res.data);
+                    if ("done") {
+                        dispatch({ type: "LOGOUT" })
+                    }else{
+                        console.log(res.data);
+                    }
+                }).catch(err => console.log(err.message)).finally(() => { })
+            } else {
+                alert("Try again")
+                window.location.reload();
+            }
+        }
+    }
 
     return (
         <div className="container">
@@ -28,6 +49,9 @@ const Profile = () => {
                                 <Link href="#" to={'/profile/' + user._id + '/edit'} className="ms-2 fs-4" title='Edit profile'>
                                     <i class="bi bi-pencil-square"></i>
                                 </Link>
+                                <a href="#" className='ms-2 fs-4' title='Delete Profile' onClick={deleteProfile}>
+                                    <i class="bi bi-x-circle"></i>
+                                </a>
                             </>
                         ) : null
                     }
