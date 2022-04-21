@@ -53,7 +53,7 @@ const EditProfile = () => {
                         </div>
                         <div className="mb-3">
                             <label htmlFor="image" className="form-label">Profile picture - Don't choose if don't want to change</label>
-                            <input className="form-control" type="file" id="image" accept='images/*' value={form.image} onChange={e => setForm({ ...form, image: e.target.files[0] })} />
+                            <input className="form-control" type="file" id="image" accept='images/*' onChange={e => setForm({ ...form, image: e.target.files[0] })} />
                         </div>
                         <div className="mb-3">
                             <label htmlFor="exampleInputPassword1" className="form-label">Password</label>

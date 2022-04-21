@@ -70,6 +70,7 @@ const ChatBox = () => {
         const con = window.confirm("are you sure to delete this friend and it's conversation")
         if (con) {
             activeChatUser.friend = chatUser;
+            activeChatUser.user = user;
             socket.emit("delete_frnd_conv", activeChatUser, (data) => {
                 alert(data)
             })

@@ -9,7 +9,6 @@ const Friends = () => {
     const url = useSelector(store => store.url)
     const [callingFriends, setCallingFriends] = useState(false)
     const socket = useSelector(store => store.socket)
-    const activeChatUser = useSelector(store => store.activeChatUser)
     const friends = useSelector(store => store.friends)
     const dispatch = useDispatch()
 
@@ -21,7 +20,6 @@ const Friends = () => {
     }, [callingFriends, user])
 
     useEffect(() => {
-        // console.log(activeChatUser);
         socket.on("new_friend_added_from_people", () => {
             setCallingFriends(true)
         })
@@ -32,23 +30,11 @@ const Friends = () => {
             setCallingFriends(true)
             dispatch({ type: "DESELECT_CHAT" })
         })
-        socket.on("conv_deleted_for_friend", () => {
-            alert("someone deleted you")
+        socket.on("conv_deleted_for_friend", (data) => {
+            alert(data.name+" deleted you from her/his friend list")
             window.location.reload()
         })
     }, [])
-
-    // useEffect(() => {
-    //     console.log(activeChatUser._id);
-    //     socket.on("conv_deleted", (data) => {
-    //         setCallingFriends(true)
-    //         console.log(activeChatUser._id + " === " + data._id);
-    //         console.log(activeChatUser._id + " === " + data);
-    //         if (Object.keys(activeChatUser).length && activeChatUser._id === data) {
-    //             dispatch({ type: "IS_CHAT_SELECTED_FALSE" })
-    //         }
-    //     })
-    // }, [activeChatUser])
 
     return (
         <div className="col-lg-3 col-12">
