@@ -47,10 +47,10 @@ const Profile = () => {
                         user._id === pageUser._id ? (
                             <>
                                 <Link href="#" to={'/profile/' + user._id + '/edit'} className="ms-2 fs-4" title='Edit profile'>
-                                    <i class="bi bi-pencil-square"></i>
+                                    <i className="bi bi-pencil-square"></i>
                                 </Link>
                                 <a href="#" className='ms-2 fs-4' title='Delete Profile' onClick={deleteProfile}>
-                                    <i class="bi bi-x-circle"></i>
+                                    <i className="bi bi-x-circle"></i>
                                 </a>
                             </>
                         ) : null

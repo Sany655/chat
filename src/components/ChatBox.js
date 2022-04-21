@@ -62,13 +62,9 @@ const ChatBox = () => {
         }
     }
 
-    async function startingCall(e) {
-        // navigator.mediaDevices.getUserMedia({audio:true,video:false}).then(res => {
-        //     console.log(res);
-        // }).catch(err => console.log(err.message))
-        // const screen = await navigator.mediaDevices.getDisplayMedia()
-        // console.log(devices);
-    }
+    // async function startingCall(e) {
+
+    // }
 
     function deleteFriend() {
         const con = window.confirm("are you sure to delete this friend and it's conversation")
@@ -104,7 +100,7 @@ const ChatBox = () => {
                     <div className="d-flex align-items-center gap-3">
                         {Object.keys(activeChatUser).length ? (
                             <>
-                                <button className="btn btn-sm btn-primary" onClick={startingCall}>call</button>
+                                {/* <button className="btn btn-sm btn-primary" onClick={startingCall}>call</button> */}
                                 {
                                     chatUser.active ? <p className="rounded-circle bg-success m-0" style={{ width: "15px", height: "15px" }}></p> : <p className="rounded-circle m-0" style={{ width: "15px", height: "15px", background: "#e0e0e0" }}></p>
                                 }
@@ -136,8 +132,7 @@ const ChatBox = () => {
                 <form onSubmit={sentMesssage}>
                     <div className="card-footer d-flex align-items-center gap-2">
                         <input required type="text" className="form-control" placeholder='write message' value={msg} onChange={(e) => setMsg(e.target.value)} disabled={Object.keys(activeChatUser).length ? false : true} />
-                        {/* emoji button will be here soon inSha'Allah */}
-                        <div class="dropdown">
+                        <div className="dropdown">
                             <button className="btn" style={{ outline: "none", boxShadow: "none" }} type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" disabled={Object.keys(activeChatUser).length ? false : true}>
                                 &#128512;
                             </button>
@@ -199,13 +194,7 @@ const ChatBox = () => {
                                 <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128566;</small>
                                 <small role="button" className="" onClick={(e) => setMsg(msg + e.currentTarget.textContent)}>&#128567;</small>
                             </div>
-                            {/* <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                <li><a class="dropdown-item" href="#">&#129488;</a></li>
-                                <li><a class="dropdown-item" href="#">Another action</a></li>
-                                <li><a class="dropdown-item" href="#">Something else here</a></li>
-                            </ul> */}
                         </div>
-                        {/* emoji button will be here soon inSha'Allah */}
                         <button disabled={msg ? false : true} type="submit" className="btn btn-primary">
                             <i className="bi bi-send"></i>
                         </button>

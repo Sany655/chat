@@ -6,7 +6,6 @@ import { useNavigate, useParams } from 'react-router-dom'
 const EditProfile = () => {
     const { id } = useParams()
     const socket = useSelector(store => store.socket)
-    const [user, setUser] = useState({})
     const [form, setForm] = useState({})
     const [loading, setLoading] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
@@ -15,20 +14,14 @@ const EditProfile = () => {
 
     useEffect(() => {
         socket.emit("get_user", id, (data) => {
-            console.log(data);
             data.old_image = data.image
             delete data.image
-            setUser(data)
+            setForm(data)
         })
     }, [])
 
-    useEffect(() => {
-        setForm(user)
-    }, [user])
-
     function updateProfile(e) {
         e.preventDefault()
-        console.log(form);
         setLoading(true)
         const fd = new FormData();
         fd.append("name", form.name);
@@ -60,7 +53,7 @@ const EditProfile = () => {
                         </div>
                         <div className="mb-3">
                             <label htmlFor="image" className="form-label">Profile picture - Don't choose if don't want to change</label>
-                            <input className="form-control" type="file" id="image" accept='images/*' onChange={e => setForm({ ...form, image: e.target.files[0] })} />
+                            <input className="form-control" type="file" id="image" accept='images/*' value={form.image} onChange={e => setForm({ ...form, image: e.target.files[0] })} />
                         </div>
                         <div className="mb-3">
                             <label htmlFor="exampleInputPassword1" className="form-label">Password</label>

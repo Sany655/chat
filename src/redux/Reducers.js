@@ -3,7 +3,7 @@ import { createStore } from "redux";
 import io from "socket.io-client";
 
 let urls;
-if (window.location.hostname === 'localhost'||'192.168.0.116') {
+if ((window.location.hostname === 'localhost')||(window.location.hostname === '192.168.0.116')) {
     if (window.innerWidth < 720) {
         urls = "http://192.168.0.116:5000"
     } else {
