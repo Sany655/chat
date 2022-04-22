@@ -1,5 +1,5 @@
 import axios from "axios";
-import { createStore } from "redux";
+import { combineReducers, createStore } from "redux";
 import io from "socket.io-client";
 
 let urls;
@@ -25,6 +25,7 @@ const initialState = {
     peoples: [],
     callingFriends: false,
     peopleShow: false,
+    // pc: new RTCPeerConnection(),
 }
 
 const Reducers = (state = initialState, action) => {

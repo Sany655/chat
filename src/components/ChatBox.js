@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 const ChatBox = () => {
     const dispatch = useDispatch()
     const activeChatUser = useSelector(store => store.activeChatUser);
+    const pc = useSelector(store => store.pc);
     const socket = useSelector(store => store.socket);
     const user = useSelector(store => store.user);
     const url = useSelector(store => store.url);
@@ -62,10 +63,6 @@ const ChatBox = () => {
         }
     }
 
-    // async function startingCall(e) {
-
-    // }
-
     function deleteFriend() {
         const con = window.confirm("are you sure to delete this friend and it's conversation")
         if (con) {
@@ -76,6 +73,55 @@ const ChatBox = () => {
             })
         }
     }
+
+
+    // async function startingCall() {
+    //     navigator.mediaDevices.getUserMedia({video:true,audio:true}).then(stream => {
+    //         console.log(stream);
+    //     }).catch(err => err.message).finally(() => {console.log("call finally")})
+    //     const dc = pc.createDataChannel("audio_call")
+    //     dc.onopen = e => console.log("data channel opened")
+    //     dc.onmessage = e => console.log("onmessage " + e.data)
+    //     pc.createOffer().then(offer => {
+    //         pc.setLocalDescription(offer)
+    //     })
+    //     let i = 0;
+    //     pc.onicecandidate = () => {
+    //         if (i === 0) {
+    //             socket.emit("call_user", {
+    //                 from: { socket: socket.id, name: user.name },
+    //                 to: { socket: chatUser.socket, name: chatUser.name },
+    //                 dataSignal: pc.localDescription
+    //             })
+    //         }
+    //         i++;
+    //     }
+    // }
+
+    // useEffect(() => {
+    //     // const pc = new RTCPeerConnection();
+    //     socket.on("call_ringing", async (data) => {
+    //         const answeringCall = window.confirm(data.from.name + " calling you, would u want to take it?")
+    //         if (answeringCall) {
+    //             pc.onicecandidate = () => {
+    //                 // console.log("onicecandidate" + JSON.stringify(pc.localDescription))
+    //                 socket.emit("call_ringing", { ...data, dataSignal: pc.localDescription })
+    //             };
+    //             pc.setRemoteDescription(data.dataSignal).then(() => {
+
+    //             }).catch(err => console.log(err.message))
+    //             pc.ondatachannel = e => {
+    //                 e.channel.onopen = () => console.log("data channel opened");
+    //                 e.channel.onmessage = dcData => console.log("on message ", dcData.data); // comming message
+    //             }
+    //             const answer = await pc.createAnswer()
+    //             pc.setLocalDescription(answer)
+    //         }
+    //     })
+    //     socket.on("call_recieving_again", (data) => {
+    //         pc.setRemoteDescription(data.dataSignal)
+    //     })
+    // }, [])
 
     return (
         <div className="col-lg-6 col-12">
@@ -101,7 +147,7 @@ const ChatBox = () => {
                     <div className="d-flex align-items-center gap-3">
                         {Object.keys(activeChatUser).length ? (
                             <>
-                                {/* <button className="btn btn-sm btn-primary" onClick={startingCall}>call</button> */}
+                                {/* <i className="bi bi-telephone fs-4" onClick={startingCall} role={"button"}></i> */}
                                 {
                                     chatUser.active ? <p className="rounded-circle bg-success m-0" style={{ width: "15px", height: "15px" }}></p> : <p className="rounded-circle m-0" style={{ width: "15px", height: "15px", background: "#e0e0e0" }}></p>
                                 }
