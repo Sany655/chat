@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 const ChatBox = () => {
     const dispatch = useDispatch()
     const activeChatUser = useSelector(store => store.activeChatUser);
-    const pc = useSelector(store => store.pc);
+    // const pc = useSelector(store => store.pc);
     const socket = useSelector(store => store.socket);
     const user = useSelector(store => store.user);
     const url = useSelector(store => store.url);
