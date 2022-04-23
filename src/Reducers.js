@@ -1,8 +1,8 @@
 import { combineReducers, createStore } from "redux";
-import CallReducer from "./redux/CallReducer";
+import ConnectionReducer from "./redux/ConnectionReducer";
 
 const reducers = combineReducers({
-    call:CallReducer
+    connection:ConnectionReducer,
 })
 
 export default createStore(reducers)
