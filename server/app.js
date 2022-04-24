@@ -6,7 +6,7 @@ const http = require("http")
 const server = http.createServer(app)
 const io = new Server(server, {
     cors: {
-        origin: ["http://192.168.0.116:3000", "http://localhost:3000/","https://sany-calling.web.app/"]
+        origin: ["http://localhost:3000","https://sany-calling.web.app","http://192.168.0.116:3000"]
     }
 })
 
