@@ -1,12 +1,12 @@
 import io from "socket.io-client";
 
 const url = (window.location.hostname === 'localhost') ? "http://localhost:5000" : "https://sany-webrtc.herokuapp.com";
-console.log(url);
+
 const initialState = {
-    socket:io.connect(url),
+    socket:io(url),
     pc:new RTCPeerConnection(),
     url:url,
-    users:[]
+    users:[],
 }
 
 const ConnectionReducer = (state = initialState,action) => {
@@ -16,7 +16,12 @@ const ConnectionReducer = (state = initialState,action) => {
                 ...state,
                 users: action.payload
             }
-    
+        case "restrartPc":
+            state.pc.close();
+            return {
+                ...state,
+                pc:new RTCPeerConnection()
+            }
         default: return state;
     }
 }
