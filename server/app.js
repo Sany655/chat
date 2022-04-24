@@ -3,14 +3,15 @@ const app = express()
 const cors = require("cors")
 const { Server } = require("socket.io")
 const http = require("http")
-// app.use(cors())
-app.use(express.json())
 const server = http.createServer(app)
 const io = new Server(server, {
     cors: {
         origin: ["http://192.168.0.116:3000", "http://localhost:3000/","https://sany-calling.web.app/"]
     }
 })
+
+app.use(express.json())
+app.use(cors())
 
 app.get('/', (req, res) => {
     res.send("hello world")
