@@ -1,6 +1,8 @@
 import io from "socket.io-client";
 
-const url = (window.location.hostname === 'localhost') ? "http://localhost:5000" : "https://sany-webrtc.herokuapp.com";
+const url = (window.location.hostname === 'localhost' || window.location.hostname === '192.168.0.116') ? (
+    window.innerWidth > 720 ? "http://localhost:5000" : "http://192.168.0.116:5000"
+) : "https://sany-webrtc.herokuapp.com";
 
 const initialState = {
     socket:io(url),
