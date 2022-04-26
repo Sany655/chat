@@ -32,7 +32,10 @@ io.on("connection", (socket) => {
     let ids = [];
     socket.on("inCall", (data) => {
         ids = data
-        console.log("in call", ids);
+    })
+
+    socket.on("discardCall",(data) => {
+        io.to(data[1]).disconnectSockets()
     })
 
     socket.on("disconnect", () => {
@@ -41,7 +44,6 @@ io.on("connection", (socket) => {
             io.emit("allUsers", allSockets)
         })
         if (ids.length) {
-            console.log("disconnected this - " + socket.id + " ans emit to this - " + ids.find(id => socket.id !== id));
             io.to(ids.find(id => socket.id !== id)).emit("disConnectedUser")
         }
     })
