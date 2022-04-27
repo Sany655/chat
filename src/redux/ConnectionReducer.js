@@ -6,19 +6,20 @@ const url = (window.location.hostname === 'localhost' || window.location.hostnam
 
 const initialState = {
     socket:io(url),
-    pc:new RTCPeerConnection(),
-    // pc:new RTCPeerConnection({
-    //     iceServers: [
-    //         {
-    //             urls: "stun:stun.stunprotocol.org"
-    //         },
-    //         {
-    //             urls: 'turn:numb.viagenie.ca',
-    //             credential: 'muazkh',
-    //             username: 'webrtc@live.com'
-    //         },
-    //     ]
-    // }), // this is the solution for different networks
+    pc:new RTCPeerConnection({
+        iceServers: [
+            {
+                urls: 'stun:numb.viagenie.ca',
+                credential: '@TnaWcnWVWu4QRn',
+                username: 'mazharulalam26@gmail.com'
+            },
+            {
+                urls: 'turn:numb.viagenie.ca',
+                credential: '@TnaWcnWVWu4QRn',
+                username: 'mazharulalam26@gmail.com'
+            },
+        ]
+    }), // this is the solution for different networks
     url:url,
     users:[],
 }
