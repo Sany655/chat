@@ -51,8 +51,14 @@ function App() {
                     console.log(error.message);
                     stream = await window.navigator.mediaDevices.getDisplayMedia({ audio: true, video: true })
                 }
+                stream.getTracks().forEach(track => {
+                    if (track.getConstraints().noiseSuppression) {
+                        track.applyConstraints({noiseSuppression:true})
+                    }
+                    pc.addTrack(track, stream)
+                });
                 localStream.current.srcObject = stream;
-                stream.getTracks().forEach(track => pc.addTrack(track, stream));
+                // stream.getTracks().forEach(track => pc.addTrack(track, stream));
                 let localDescriptions;
                 pc.onicecandidate = e => localDescriptions = pc.localDescription;
                 pc.ondatachannel = e => {
@@ -93,6 +99,7 @@ function App() {
     }, [pc])
 
     const callUser = async (id) => {
+        setLoading(true)
         let stream;
         try {
             stream = await window.navigator.mediaDevices.getUserMedia({ audio: true, video: true })
@@ -100,8 +107,12 @@ function App() {
             stream = await window.navigator.mediaDevices.getDisplayMedia({ audio: true, video: true })
         }
         localStream.current.srcObject = stream;
-        stream.getTracks().forEach(track => pc.addTrack(track, stream));
-        setLoading(true)
+        stream.getTracks().forEach(track => {
+            if (track.getConstraints().noiseSuppression) {
+                track.applyConstraints({noiseSuppression:true})
+            }
+            pc.addTrack(track, stream)
+        });
         let localDescriptions;
 
         dc.current = pc.createDataChannel("channel")
@@ -139,10 +150,10 @@ function App() {
     }, [pc])
 
     return (
-        <div className="row m-0 vh-100">
-            <div className="d-none d-lg-block col-6 d-flex flex-column align-items-center justify-content-center h-100">
-                <h3>Your socket id is {socket.id}</h3>
-                <video ref={localStream} className="w-100 h-75 border" autoPlay={true} muted></video>
+        <div className="row m-0" style={{ height: "85vh" }}>
+            <div className="d-none col-6 d-lg-flex flex-column align-items-center justify-content-center h-100">
+                <h3>my id : {socket.id}</h3>
+                <video ref={localStream} className="w-100" autoPlay={true} muted controls></video>
                 <ul className="nav">
                     {
                         errors.map((error, i) => <li key={i} className="nav-item text-danger">{error}</li>)
@@ -150,23 +161,24 @@ function App() {
                 </ul>
             </div>
             <div className="col-lg-6 col-12 h-100">
-                <div className={`card-body text-center h-50 ${!isChannelOpen&&"d-none"}`}>
+                <div className={`text-center h-50 ${!isChannelOpen && "d-none"}`}>
                     <ul className="nav">
                         {
                             errors.map((error, i) => <li key={i} className="nav-item text-danger">{error}</li>)
                         }
                     </ul>
-                    <video ref={mediaStream} className={`w-100 h-100 border`} autoPlay={true} controls></video>
+                    <video ref={mediaStream} className={`w-100`} style={{height:"60%"}} autoPlay={true} controls></video>
+                    <button className="btn btn-danger" onClick={() => { window.location.reload() }}>
+                        Cancel call
+                        <i className="bi bi-x-lg ms-2"></i>
+                    </button>
                 </div>
                 {
                     isChannelOpen ? (
                         <>
                             <div className="card h-50">
-                                <div className="card-header">
-                                    <i className="bi bi-x-lg" role={"button"} onClick={() => { window.location.reload() }}></i>
-                                </div>
-                                <div className="card-body h-75">
-                                    <ul className="list-group overflow-auto" style={{ height: "90%" }}>
+                                <div className="card-body d-flex justify-content-between align-items-center flex-column">
+                                    <ul className="list-group overflow-auto">
                                         {
                                             messages.map((message, i) => (
                                                 message.id === socket.id ? (
@@ -177,14 +189,14 @@ function App() {
                                             ))
                                         }
                                     </ul>
-                                    <form style={{ height: "10%" }} onSubmit={e => {
+                                    <form className="w-100" onSubmit={e => {
                                         e.preventDefault()
                                         dc.current.send(e.target.msg.value)
                                         setMessages([{ id: socket.id, message: e.target.msg.value }, ...messages])
                                         e.target.msg.value = ""
                                     }}>
                                         <div className="input-group">
-                                            <input type="text" className="form-control" name="msg" />
+                                            <input type="text" className="form-control" name="msg" autoComplete="off" />
                                             <button className="input-group-text" type="submit">
                                                 <i className="bi bi-send"></i>
                                             </button>
@@ -201,6 +213,7 @@ function App() {
                                 </div>
                             </div>
                         ) : <ul className="list-group h-100 overflow-auto">
+                            <p>my id - {socket.id}</p>
                             <h1>User List (sockets)</h1>
                             {
                                 users.filter(u => u !== socket.id).map(user => (
