@@ -13,6 +13,7 @@ function App() {
     const [isChannelOpen, setIsChannelOpen] = useState(false)
     const [messages, setMessages] = useState([])
     const [loading, setLoading] = useState(false)
+    const [callType, setCallType] = useState(false)
 
     useEffect(() => {
         socket.on("allUsers", (data) => {
@@ -40,46 +41,56 @@ function App() {
         }
     }, [dc.current, messages])
 
+    async function getTracks(type) {
+        try {
+            const stream = await window.navigator.mediaDevices.getUserMedia({ audio: true, video: type })
+            stream.getTracks().forEach(track => {
+                if (track.getConstraints().noiseSuppression) {
+                    track.applyConstraints({ noiseSuppression: true })
+                }
+                pc.addTrack(track, stream)
+            });
+            setCallType(type)
+            return stream;
+        } catch (error) {
+            throw "Your device doesn't support it";
+        }
+    }
+
     useEffect(() => {
         socket.on("callUser", async data => {
             const perm = window.confirm("some one calling you.. recieve call?")
             if (perm) {
-                let stream;
-                try {
-                    stream = await window.navigator.mediaDevices.getUserMedia({ audio: true, video: true })
-                } catch (error) {
-                    console.log(error.message);
-                    stream = await window.navigator.mediaDevices.getDisplayMedia({ audio: true, video: true })
-                }
-                stream.getTracks().forEach(track => {
-                    if (track.getConstraints().noiseSuppression) {
-                        track.applyConstraints({noiseSuppression:true})
+                setLoading(true)
+                getTracks(data.type).then((stream) => {
+                    localStream.current.srcObject = stream
+                    let localDescriptions;
+                    pc.onicecandidate = e => localDescriptions = pc.localDescription;
+                    pc.ondatachannel = e => {
+                        dc.current = e.channel;
+                        dc.current.onopen = () => {
+                            socket.emit("inCall", [socket.id, data.id]);
+                            setIsChannelOpen(true)
+                            setLoading(false)
+                        };
                     }
-                    pc.addTrack(track, stream)
-                });
-                localStream.current.srcObject = stream;
-                // stream.getTracks().forEach(track => pc.addTrack(track, stream));
-                let localDescriptions;
-                pc.onicecandidate = e => localDescriptions = pc.localDescription;
-                pc.ondatachannel = e => {
-                    dc.current = e.channel;
-                    dc.current.onopen = () => {
-                        socket.emit("inCall", [socket.id, data.id]);
-                        setIsChannelOpen(true)
-                    };
-                }
-                const remoteDesc = new RTCSessionDescription(data.offer)
-                pc.setRemoteDescription(remoteDesc).then(() => { })
-                pc.createAnswer().then(answer => {
-                    pc.setLocalDescription(answer).then(() => { })
-                })
-
-                setTimeout(() => {
-                    socket.emit("sendingAnswer", {
-                        id: data.id,
-                        answer: localDescriptions
+                    const remoteDesc = new RTCSessionDescription(data.offer)
+                    pc.setRemoteDescription(remoteDesc).then(() => { })
+                    pc.createAnswer().then(answer => {
+                        pc.setLocalDescription(answer).then(() => { })
                     })
-                }, 1500)
+
+                    setTimeout(() => {
+                        socket.emit("sendingAnswer", {
+                            id: data.id,
+                            answer: localDescriptions
+                        })
+                    }, 1500)
+                }).catch(err => {
+                    setErrors([...errors, err])
+                    socket.emit("discardCall", [socket.id, data.id])
+                    setLoading(false)
+                })
             } else {
                 socket.emit("discardCall", [socket.id, data.id])
             }
@@ -98,46 +109,40 @@ function App() {
         return () => socket.removeListener("recievingingAnswer")
     }, [pc])
 
-    const callUser = async (id) => {
+    const callUser = async (id, type) => {
         setLoading(true)
-        let stream;
-        try {
-            stream = await window.navigator.mediaDevices.getUserMedia({ audio: true, video: true })
-        } catch (error) {
-            stream = await window.navigator.mediaDevices.getDisplayMedia({ audio: true, video: true })
-        }
-        localStream.current.srcObject = stream;
-        stream.getTracks().forEach(track => {
-            if (track.getConstraints().noiseSuppression) {
-                track.applyConstraints({noiseSuppression:true})
-            }
-            pc.addTrack(track, stream)
-        });
-        let localDescriptions;
+        getTracks(type).then((stream) => {
+            localStream.current.srcObject = stream
+            let localDescriptions;
 
-        dc.current = pc.createDataChannel("channel")
-        dc.current.onopen = () => {
-            setLoading(false)
-            setIsChannelOpen(true)
-            socket.emit("inCall", [socket.id, id]);
-        };
-        pc.onicecandidate = e => {
-            localDescriptions = pc.localDescription
-        };
-        pc.createOffer().then(offer => {
-            pc.setLocalDescription(offer).then(() => {
+            dc.current = pc.createDataChannel("channel")
+            dc.current.onopen = () => {
+                setIsChannelOpen(true)
+                socket.emit("inCall", [socket.id, id]);
+                setLoading(false)
+            };
+            pc.onicecandidate = e => {
+                localDescriptions = pc.localDescription
+            };
+            pc.createOffer().then(offer => {
+                pc.setLocalDescription(offer).then(() => {
 
-            })
-        })
-
-        setTimeout(() => {
-            if (localDescriptions) {
-                socket.emit("callUser", {
-                    id: id,
-                    offer: localDescriptions
                 })
-            }
-        }, 1500)
+            })
+
+            setTimeout(() => {
+                if (localDescriptions) {
+                    socket.emit("callUser", {
+                        id: id,
+                        offer: localDescriptions,
+                        type: type
+                    })
+                }
+            }, 1500)
+        }).catch(err => {
+            setErrors([...errors, err])
+            setLoading(false)
+        })
     }
 
     useEffect(() => {
@@ -153,7 +158,7 @@ function App() {
         <div className="row m-0" style={{ height: "85vh" }}>
             <div className="d-none col-6 d-lg-flex flex-column align-items-center justify-content-center h-100">
                 <h3>my id : {socket.id}</h3>
-                <video ref={localStream} className="w-100" autoPlay={true} muted controls></video>
+                <video ref={localStream} className={`w-100 ${!callType && "d-none"}`} autoPlay={true} muted controls></video>
                 <ul className="nav">
                     {
                         errors.map((error, i) => <li key={i} className="nav-item text-danger">{error}</li>)
@@ -167,7 +172,13 @@ function App() {
                             errors.map((error, i) => <li key={i} className="nav-item text-danger">{error}</li>)
                         }
                     </ul>
-                    <video ref={mediaStream} className={`w-100`} style={{height:"60%"}} autoPlay={true} controls></video>
+
+                    <video ref={mediaStream} className={`w-100 ${!callType && "d-none"}`} style={{ height: "60%" }} autoPlay={true} controls></video>
+                    <div className={`card ${callType && "d-none"}`}>
+                        <div className="card-body text-center">
+                            <h1>Call ongoing</h1>
+                        </div>
+                    </div>
                     <button className="btn btn-danger" onClick={() => { window.location.reload() }}>
                         Cancel call
                         <i className="bi bi-x-lg ms-2"></i>
@@ -219,9 +230,14 @@ function App() {
                                 users.filter(u => u !== socket.id).map(user => (
                                     <li key={user} className="list-group-item d-flex justify-content-between align-items-center">
                                         <h5 className="m-0">{user}</h5>
-                                        <i className="bi bi-telephone fs-4" onClick={() => {
-                                            callUser(user)
-                                        }} role={"button"}></i>
+                                        <div className="d-flex align-items-center gap-2">
+                                            <i className="bi bi-telephone fs-4" onClick={() => {
+                                                callUser(user, false)
+                                            }} role={"button"}></i>
+                                            <i className="bi bi-camera-video fs-4" onClick={() => {
+                                                callUser(user, true)
+                                            }} role={"button"}></i>
+                                        </div>
                                     </li>
                                 ))
                             }
