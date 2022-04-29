@@ -31,7 +31,7 @@ const ConnectionReducer = (state = initialState,action) => {
                 ...state,
                 users: action.payload
             }
-        case "restrartPc":
+        case "restartPc":
             state.pc.close();
             return {
                 ...state,

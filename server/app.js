@@ -35,7 +35,8 @@ io.on("connection", (socket) => {
     })
 
     socket.on("discardCall",(data) => {
-        io.to(data[1]).disconnectSockets()
+        // io.to(data[1]).disconnectSockets()
+        io.to(data.find(id => socket.id !== id)).emit("disConnectedUser")
     })
 
     socket.on("disconnect", () => {

@@ -14,6 +14,25 @@ function App() {
     const [messages, setMessages] = useState([])
     const [loading, setLoading] = useState(false)
     const [callType, setCallType] = useState(false)
+    const [callingUser, setCallingUser] = useState([])
+
+    function disconnectCall() {
+        // window.location.reload();
+        setIsChannelOpen(false)
+        setLoading(false)
+
+        localStream.current.srcObject && localStream.current.srcObject.getTracks().forEach(track => {
+            track.stop()
+        });
+        mediaStream.current.srcObject && mediaStream.current.srcObject.getTracks().forEach(track => {
+            track.stop()
+        });
+
+        dispatch({ type: "restartPc" })
+        if (callingUser.length) {
+            socket.emit("discardCall", callingUser)
+        }
+    }
 
     useEffect(() => {
         socket.on("allUsers", (data) => {
@@ -23,10 +42,13 @@ function App() {
 
     useEffect(() => {
         socket.on("disConnectedUser", () => {
-            window.location.reload()
+            // window.location.reload()
+            disconnectCall()
+
         })
         socket.on("disconnect", () => {
-            window.location.reload()
+            disconnectCall()
+            // window.location.reload()
         })
     }, [])
 
@@ -59,40 +81,45 @@ function App() {
 
     useEffect(() => {
         socket.on("callUser", async data => {
-            const perm = window.confirm("some one calling you.. recieve call?")
-            if (perm) {
-                setLoading(true)
-                getTracks(data.type).then((stream) => {
-                    localStream.current.srcObject = stream
-                    let localDescriptions;
-                    pc.onicecandidate = e => localDescriptions = pc.localDescription;
-                    pc.ondatachannel = e => {
-                        dc.current = e.channel;
-                        dc.current.onopen = () => {
-                            socket.emit("inCall", [socket.id, data.id]);
-                            setIsChannelOpen(true)
-                            setLoading(false)
-                        };
-                    }
-                    const remoteDesc = new RTCSessionDescription(data.offer)
-                    pc.setRemoteDescription(remoteDesc).then(() => { })
-                    pc.createAnswer().then(answer => {
-                        pc.setLocalDescription(answer).then(() => { })
-                    })
-
-                    setTimeout(() => {
-                        socket.emit("sendingAnswer", {
-                            id: data.id,
-                            answer: localDescriptions
-                        })
-                    }, 1500)
-                }).catch(err => {
-                    setErrors([...errors, err])
-                    socket.emit("discardCall", [socket.id, data.id])
-                    setLoading(false)
-                })
-            } else {
+            if (isChannelOpen) {
                 socket.emit("discardCall", [socket.id, data.id])
+            } else {
+                const perm = window.confirm("some one calling you.. recieve call?")
+                if (perm) {
+                    setCallingUser([socket.id, data.id])
+                    setLoading(true)
+                    getTracks(data.type).then((stream) => {
+                        localStream.current.srcObject = stream
+                        let localDescriptions;
+                        pc.onicecandidate = e => localDescriptions = pc.localDescription;
+                        pc.ondatachannel = e => {
+                            dc.current = e.channel;
+                            dc.current.onopen = () => {
+                                socket.emit("inCall", [socket.id, data.id]);
+                                setIsChannelOpen(true)
+                                setLoading(false)
+                            };
+                        }
+                        const remoteDesc = new RTCSessionDescription(data.offer)
+                        pc.setRemoteDescription(remoteDesc).then(() => { })
+                        pc.createAnswer().then(answer => {
+                            pc.setLocalDescription(answer).then(() => { })
+                        })
+
+                        setTimeout(() => {
+                            socket.emit("sendingAnswer", {
+                                id: data.id,
+                                answer: localDescriptions
+                            })
+                        }, 1500)
+                    }).catch(err => {
+                        setErrors([...errors, err])
+                        socket.emit("discardCall", [socket.id, data.id])
+                        setLoading(false)
+                    })
+                } else {
+                    socket.emit("discardCall", [socket.id, data.id])
+                }
             }
         })
         return () => socket.removeListener("callUser")
@@ -110,6 +137,7 @@ function App() {
     }, [pc])
 
     const callUser = async (id, type) => {
+        setCallingUser([socket.id, id])
         setLoading(true)
         getTracks(type).then((stream) => {
             localStream.current.srcObject = stream
@@ -150,7 +178,6 @@ function App() {
         pc1.ontrack = e => {
             mediaStream.current.srcObject = e.streams[0];
         }
-
         return () => pc1 = null
     }, [pc])
 
@@ -179,7 +206,7 @@ function App() {
                             <h1>Call ongoing</h1>
                         </div>
                     </div>
-                    <button className="btn btn-danger" onClick={() => { window.location.reload() }}>
+                    <button className="btn btn-danger" onClick={disconnectCall}>
                         Cancel call
                         <i className="bi bi-x-lg ms-2"></i>
                     </button>
@@ -224,8 +251,7 @@ function App() {
                                 </div>
                             </div>
                         ) : <ul className="list-group h-100 overflow-auto">
-                            <p>my id - {socket.id}</p>
-                            <h1>User List (sockets)</h1>
+                            <h1>User List ({socket.id})</h1>
                             {
                                 users.filter(u => u !== socket.id).map(user => (
                                     <li key={user} className="list-group-item d-flex justify-content-between align-items-center">
