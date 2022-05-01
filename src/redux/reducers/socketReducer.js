@@ -1,7 +1,7 @@
 import io from "socket.io-client"
 
 const initialState = {
-    socket:io()
+    socket:io.connect("http://localhost:5000")
 }
 
 function SocketReducer(state = initialState,action) {

@@ -1,14 +1,14 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import Routers from './routes/Routers'
 
 const App = () => {
-    const user = useSelector(store => store.user).user
-    console.log(user);
     return (
-        <div>
-            <h1>Welcome Home</h1>
-        </div>
-    )
+        <BrowserRouter>
+            <Routes>
+                <Route path='/' element={<Routers />} />
+            </Routes>
+        </BrowserRouter>)
 }
 
 export default App
