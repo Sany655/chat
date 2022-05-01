@@ -2,6 +2,7 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import Login from './routes/pages/Login'
+import Register from './routes/pages/Register'
 import Routers from './routes/Routers'
 
 const App = () => {
@@ -34,6 +35,7 @@ const App = () => {
             <Routes>
                 <Route path='/' element={<PrivateRoute><Routers /></PrivateRoute>} />
                 <Route path='/login' element={<PublicRoute><Login /></PublicRoute>} />
+                <Route path='/register' element={<PublicRoute><Register /></PublicRoute>} />
             </Routes>
         </BrowserRouter>)
 }
