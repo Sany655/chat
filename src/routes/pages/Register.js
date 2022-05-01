@@ -14,35 +14,32 @@ const Register = () => {
     const [response, setResponse] = useState("")
     const [uniqueEmail, setUniqueEmail] = useState(false)
     const [loading, setLoading] = useState(false)
-    const socket = useSelector(store => store.socket)
+    const socket = useSelector(store => store.socket).socket
 
     function query(e) {
         e.preventDefault()
         setLoading(true)
-        // axios.post("/email", { email: form.email }).then((res) => {
-        //     if (res.data) {
-        //         setError("Email has already an account, try to login")
-        //         setUniqueEmail(false)
-        //         setResponse("")
-        //     } else {
-        //         setUniqueEmail(true)
-        //         setError("")
-        //         setResponse("")
-        //     }
-        // }).catch(err => setError(err.message)).finally(() => {
-        //     setLoading(false)
-        // })
+        socket.emit("unique-email", { email: form.email }, (data) => {
+            if (data) {
+                setError("Email has already an account, try to login")
+                setUniqueEmail(false)
+                setResponse("")
+            } else {
+                setUniqueEmail(true)
+                setError("")
+                setResponse("")
+            }
+            setLoading(false)
+        })
     }
 
     function submit(e) {
         e.preventDefault();
         setLoading(true)
-        const fd = new FormData();
-        fd.append("name", form.name);
-        fd.append("email", form.email);
-        fd.append("password", form.password);
-        fd.append("phone", form.phone);
-        fd.append("image", form.image);
+        const fReader = new FileReader();
+        fReader.onload(e => {
+            socket.emit("upload", e.target.result)
+        })
         // axios.post("/registration", fd).then((res) => {
         //     if (res.data === "done") {
         //         setResponse("Registerd successsfully, Login!")
@@ -91,19 +88,19 @@ const Form = ({ form, setForm }) => {
     const [showPassword, setShowPassword] = useState(false)
     return (
         <div>
-            <div className="mb-3">
+            {/* <div className="mb-3">
                 <label htmlFor="name" className="form-label">Full name</label>
                 <input required type="text" className="form-control" id="name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
             </div>
             <div className="mb-3">
                 <label htmlFor="phone" className="form-label">Phone number</label>
                 <input required type="number" className="form-control" id="phone" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} />
-            </div>
+            </div> */}
             <div className="mb-3">
                 <label htmlFor="image" className="form-label">Profile picture</label>
                 <input required className="form-control" type="file" id="image" accept='images/*' onChange={e => setForm({ ...form, image: e.target.files[0] })} />
             </div>
-            <div className="mb-3">
+            {/* <div className="mb-3">
                 <label htmlFor="exampleInputPassword1" className="form-label">Password</label>
                 <div className="input-group">
                     <input required type={showPassword ? "text" : "password"} className="form-control" id="exampleInputPassword1" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />
@@ -111,7 +108,7 @@ const Form = ({ form, setForm }) => {
                         <i onClick={() => setShowPassword(!showPassword)} className={showPassword ? "bi bi-eye-slash" : "bi bi-eye"}></i>
                     </small>
                 </div>
-            </div>
+            </div> */}
         </div>
     )
 }

@@ -5,6 +5,9 @@ const http = require("http")
 const server = http.createServer(app)
 const { Server } = require("socket.io")
 const { MongoClient, ServerApiVersion } = require('mongodb');
+const fs = require("fs")
+
+app.use(express.static(__dirname + '/images'))
 
 const io = new Server(server, {
     cors: {
@@ -23,9 +26,23 @@ client.connect(err => {
     io.on("connection", socket => {
         console.log(socket.id + " is connected");
 
+        socket.on("unique-email", (data, cb) => {
+            users.findOne({ email: data.email }).then(emailRes => {
+                if (emailRes) {
+                    cb(true)
+                } else {
+                    cb(false)
+                }
+            }).catch(err => console.log(err.message))
+        })
+
+        socket.on("upload",data => {
+            console.log(data);
+        })
 
 
-        io.on("disconnect", () => {
+
+        socket.on("disconnect", () => {
             console.log(socket.id + " is disconnected");
         })
     })
