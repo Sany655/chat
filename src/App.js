@@ -1,10 +1,9 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import Default from './routes/layoutes/Default'
 import Login from './routes/pages/Login'
 import Register from './routes/pages/Register'
-import Routers from './routes/Routers'
-
 const App = () => {
     const user = useSelector((store) => store.user).user;
 
@@ -33,9 +32,9 @@ const App = () => {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path='/' element={<PrivateRoute><Routers /></PrivateRoute>} />
-                <Route path='/login' element={<PublicRoute><Login /></PublicRoute>} />
-                <Route path='/register' element={<PublicRoute><Register /></PublicRoute>} />
+                <Route path='/' element={<PrivateRoute><Default /></PrivateRoute>} />
+                <Route path='login/*' element={<PublicRoute><Login /></PublicRoute>} />
+                <Route path='register/*' element={<PublicRoute><Register /></PublicRoute>} />
             </Routes>
         </BrowserRouter>)
 }

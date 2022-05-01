@@ -36,9 +36,9 @@ client.connect(err => {
             }).catch(err => console.log(err.message))
         })
 
-        socket.on("upload",data => {
-            console.log(data);
-        })
+        // socket.on("register",data => {
+        //     fs.createWriteStream("./images/"+data.imageName).write(data.image);
+        // })
 
 
 

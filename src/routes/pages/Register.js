@@ -34,14 +34,16 @@ const Register = () => {
     }
 
     function submit(e) {
-        e.preventDefault();
         setLoading(true)
-        const fReader = new FileReader();
-        fReader.onload(e => {
-            socket.emit("upload", e.target.result)
-        })
-        // axios.post("/registration", fd).then((res) => {
-        //     if (res.data === "done") {
+        // e.preventDefault();
+        // socket.emit("register", {
+        //     name: form.name,
+        //     email: form.email,
+        //     phone: form.phone,
+        //     image: form.image,
+        //     password: form.password,
+        // }, data => {
+        //     if (data === "done") {
         //         setResponse("Registerd successsfully, Login!")
         //         setError("")
         //         setUniqueEmail(false)
@@ -49,9 +51,8 @@ const Register = () => {
         //         socket.emit("registered")
         //     } else {
         //         setResponse("")
-        //         setError(res.data)
+        //         setError(data)
         //     }
-        // }).catch(err => setError(err.message)).finally(() => {
         //     setLoading(false)
         // })
     }
@@ -88,19 +89,19 @@ const Form = ({ form, setForm }) => {
     const [showPassword, setShowPassword] = useState(false)
     return (
         <div>
-            {/* <div className="mb-3">
+            <div className="mb-3">
                 <label htmlFor="name" className="form-label">Full name</label>
                 <input required type="text" className="form-control" id="name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
             </div>
             <div className="mb-3">
                 <label htmlFor="phone" className="form-label">Phone number</label>
                 <input required type="number" className="form-control" id="phone" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} />
-            </div> */}
+            </div>
             <div className="mb-3">
                 <label htmlFor="image" className="form-label">Profile picture</label>
                 <input required className="form-control" type="file" id="image" accept='images/*' onChange={e => setForm({ ...form, image: e.target.files[0] })} />
             </div>
-            {/* <div className="mb-3">
+            <div className="mb-3">
                 <label htmlFor="exampleInputPassword1" className="form-label">Password</label>
                 <div className="input-group">
                     <input required type={showPassword ? "text" : "password"} className="form-control" id="exampleInputPassword1" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />
@@ -108,7 +109,7 @@ const Form = ({ form, setForm }) => {
                         <i onClick={() => setShowPassword(!showPassword)} className={showPassword ? "bi bi-eye-slash" : "bi bi-eye"}></i>
                     </small>
                 </div>
-            </div> */}
+            </div>
         </div>
     )
 }
