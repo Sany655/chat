@@ -35,26 +35,27 @@ const Register = () => {
 
     function submit(e) {
         setLoading(true)
-        // e.preventDefault();
-        // socket.emit("register", {
-        //     name: form.name,
-        //     email: form.email,
-        //     phone: form.phone,
-        //     image: form.image,
-        //     password: form.password,
-        // }, data => {
-        //     if (data === "done") {
-        //         setResponse("Registerd successsfully, Login!")
-        //         setError("")
-        //         setUniqueEmail(false)
-        //         setForm({ email: "", name: "", password: "", phone: "", image: null })
-        //         socket.emit("registered")
-        //     } else {
-        //         setResponse("")
-        //         setError(data)
-        //     }
-        //     setLoading(false)
-        // })
+        e.preventDefault();
+        socket.emit("register", {
+            name: form.name,
+            email: form.email,
+            phone: form.phone,
+            image: form.image,
+            imageName: Date.now()+"_"+form.name+"_"+form.image.name,
+            password: form.password,
+        }, data => {
+            if (data === "done") {
+                setResponse("Registerd successsfully, Login!")
+                setError("")
+                setUniqueEmail(false)
+                setForm({ email: "", name: "", password: "", phone: "", image: null })
+                socket.emit("registered")
+            } else {
+                setResponse("")
+                setError(data)
+            }
+            setLoading(false)
+        })
     }
 
     return (
@@ -91,20 +92,20 @@ const Form = ({ form, setForm }) => {
         <div>
             <div className="mb-3">
                 <label htmlFor="name" className="form-label">Full name</label>
-                <input required type="text" className="form-control" id="name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
+                <input autoComplete='off' required type="text" className="form-control" id="name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
             </div>
             <div className="mb-3">
                 <label htmlFor="phone" className="form-label">Phone number</label>
-                <input required type="number" className="form-control" id="phone" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} />
+                <input autoComplete='off' required type="number" className="form-control" id="phone" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} />
             </div>
             <div className="mb-3">
                 <label htmlFor="image" className="form-label">Profile picture</label>
-                <input required className="form-control" type="file" id="image" accept='images/*' onChange={e => setForm({ ...form, image: e.target.files[0] })} />
+                <input autoComplete='off' required className="form-control" type="file" id="image" accept='images/*' onChange={e => setForm({ ...form, image: e.target.files[0] })} />
             </div>
             <div className="mb-3">
                 <label htmlFor="exampleInputPassword1" className="form-label">Password</label>
                 <div className="input-group">
-                    <input required type={showPassword ? "text" : "password"} className="form-control" id="exampleInputPassword1" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />
+                    <input autoComplete='off' required type={showPassword ? "text" : "password"} className="form-control" id="exampleInputPassword1" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />
                     <small className='input-group-text'>
                         <i onClick={() => setShowPassword(!showPassword)} className={showPassword ? "bi bi-eye-slash" : "bi bi-eye"}></i>
                     </small>
@@ -118,7 +119,7 @@ const EmailEl = ({ form, setForm }) => {
     return (
         <div className="mb-3">
             <label htmlFor="exampleInputEmail1" className="form-label">Email address</label>
-            <input required type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
+            <input autoComplete='off' required type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
             <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
         </div>
     )

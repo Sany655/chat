@@ -32,7 +32,7 @@ const App = () => {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path='/' element={<PrivateRoute><Default /></PrivateRoute>} />
+                <Route path='/*' element={<PrivateRoute><Default /></PrivateRoute>} />
                 <Route path='login/*' element={<PublicRoute><Login /></PublicRoute>} />
                 <Route path='register/*' element={<PublicRoute><Register /></PublicRoute>} />
             </Routes>

@@ -6,9 +6,11 @@ import Home from '../pages/Home'
 const Default = () => {
     return (
         <main>
-            <Header />
+            {/* <Header /> */}
+            <div className="container-fluid">
                 <Home />
-            <Footer />
+            </div>
+            {/* <Footer /> */}
         </main>
     )
 }

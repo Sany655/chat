@@ -12,6 +12,7 @@ const Login = () => {
     const socket = useSelector(store => store.socket).socket
     const dispatch = useDispatch()
     const [showPassword, setShowPassword] = useState(false)
+
     const login = (e) => {
         setLoading(true)
         e.preventDefault();
@@ -19,26 +20,13 @@ const Login = () => {
             if (data.lastErrorObject.updatedExisting) {
                 setForm({ email: "", password: "" })
                 setError("")
-                dispatch({ type: "LOGIN", payload: data.value })
+                dispatch({ type: "login", payload: data.value })
                 setLoading(false);
             } else {
                 setError("Wrong Credentials, Try again")
                 setLoading(false);
             }
         })
-        // try {
-        //     const res = await axios.post("/login", form, { signal: abort.signal })
-        //     if (res.data.lastErrorObject.updatedExisting) {
-        //         setForm({ email: "", password: "" })
-        //         setError("")
-        //         dispatch({ type: "LOGIN", payload: res.data.value })
-        //     } else {
-        //         setError("Wrong Credentials, Try again")
-        //     }
-        //     setLoading(false);
-        // } catch (error) {
-        //     console.log(error.message);
-        // }
     }
 
     return (
@@ -51,13 +39,13 @@ const Login = () => {
                         <hr />
                         <div className="mb-3">
                             <label htmlFor="exampleInputEmail1" className="form-label">Email address</label>
-                            <input required value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" />
+                            <input autoComplete='off' required value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" />
                             <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
                         </div>
                         <div className="mb-3">
                             <label htmlFor="exampleInputPassword1" className="form-label">Password</label>
                             <div className="input-group">
-                                <input required type={showPassword ? "text" : "password"} className="form-control" id="exampleInputPassword1" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />
+                                <input autoComplete='off' required type={showPassword ? "text" : "password"} className="form-control" id="exampleInputPassword1" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />
                                 <small className='input-group-text'>
                                     <i onClick={() => setShowPassword(!showPassword)} className={showPassword ? "bi bi-eye-slash" : "bi bi-eye"}></i>
                                 </small>

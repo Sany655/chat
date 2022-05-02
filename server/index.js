@@ -18,7 +18,7 @@ const io = new Server(server, {
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.e2cer.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-client.connect(err => {
+client.connect().then(() => {
     const db = client.db("calling_dudes");
     const users = db.collection("users");
 
@@ -36,22 +36,42 @@ client.connect(err => {
             }).catch(err => console.log(err.message))
         })
 
-        // socket.on("register",data => {
-        //     fs.createWriteStream("./images/"+data.imageName).write(data.image);
-        // })
+        socket.on("register", (data, cb) => {
+            const image = data.image;
+            data.image = data.imageName;
+            delete data.imageName;
+            users.insertOne(data).then(insertRes => {
+                if (insertRes.acknowledged) {
+                    cb("done");
+                    fs.createWriteStream("./images/" + data.image).write(image);
+                } else {
+                    cb(insertRes)
+                }
+            }).catch(err => res.send(err.message))
+        })
 
-
+        socket.on("login", (data, cb) => {
+            users.findOneAndUpdate({email:data.email,password:data.password}, { $set: { active: true, socket: socket.id } }).then(loginResponse => {
+                loginResponse.value.active = true;
+                loginResponse.value.socekt = socket.id;
+                cb(loginResponse);
+            }).catch(err => cb(err.message))
+        })
 
         socket.on("disconnect", () => {
-            console.log(socket.id + " is disconnected");
+            users.findOneAndUpdate({ socket: socket.id }, { $set: { active: false, socket: null,lastActive:Date.now() } }).then((res) => {
+                if (res.lastErrorObject.updatedExisting) {
+                    // socket.broadcast.emit("loggedOn", res.value._id)
+                }
+            }).catch(err => console.log(err.message))
+            console.log(socket.id+" disconnect");
         })
     })
 
 
 
     console.log("DB connected");
-    // client.close();
-});
+}).catch(err => console.log(err.message));
 
 
 
