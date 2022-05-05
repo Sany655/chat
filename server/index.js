@@ -4,7 +4,7 @@ require("dotenv").config()
 const http = require("http")
 const server = http.createServer(app)
 const { Server } = require("socket.io")
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const fs = require("fs")
 
 app.use(express.static(__dirname + '/images'))
@@ -21,13 +21,29 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 client.connect().then(() => {
     const db = client.db("calling_dudes");
     const users = db.collection("users");
+    const friends = db.collection("friends");
 
 
     io.on("connection", socket => {
         console.log(socket.id + " is connected");
 
-        socket.on("get_peoples",(data,cv) => {
-            // users.find()
+        socket.on("call_peoples",() => {
+            socket.broadcast.emit("call_peoples")
+        })
+
+        // socket.on("connect_friend",(id,cb) => {
+            
+        // })
+
+        socket.on("get_peoples", async (data, cb) => {
+            const newFriendArr = []
+            const fri = await friends.find().toArray()
+            fri.map(friend => {
+                newFriendArr.push(ObjectId(friend.users.find(u => u !== data)))
+            })
+            users.find({ _id: { $nin: [...newFriendArr, ObjectId(data)] } }).sort({ $natural: -1 }).limit(10).toArray().then(fullfilled => {
+                cb(fullfilled);
+            }).catch(err => console.log(err.message))
         })
 
         socket.on("unique-email", (data, cb) => {
@@ -55,7 +71,7 @@ client.connect().then(() => {
         })
 
         socket.on("login", (data, cb) => {
-            users.findOneAndUpdate({email:data.email,password:data.password}, { $set: { active: true, socket: socket.id } }).then(loginResponse => {
+            users.findOneAndUpdate({ email: data.email, password: data.password }, { $set: { active: true, socket: socket.id } }).then(loginResponse => {
                 loginResponse.value.active = true;
                 loginResponse.value.socekt = socket.id;
                 cb(loginResponse);
@@ -63,12 +79,12 @@ client.connect().then(() => {
         })
 
         socket.on("disconnect", () => {
-            users.findOneAndUpdate({ socket: socket.id }, { $set: { active: false, socket: null,lastActive:Date.now() } }).then((res) => {
+            users.findOneAndUpdate({ socket: socket.id }, { $set: { active: false, socket: null, lastActive: Date.now() } }).then((res) => {
                 if (res.lastErrorObject.updatedExisting) {
                     // socket.broadcast.emit("loggedOn", res.value._id)
                 }
             }).catch(err => console.log(err.message))
-            console.log(socket.id+" disconnect");
+            console.log(socket.id + " disconnect");
         })
     })
 

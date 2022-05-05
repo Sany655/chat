@@ -49,7 +49,7 @@ const Register = () => {
                 setError("")
                 setUniqueEmail(false)
                 setForm({ email: "", name: "", password: "", phone: "", image: null })
-                socket.emit("registered")
+                socket.emit("call_peoples")
             } else {
                 setResponse("")
                 setError(data)

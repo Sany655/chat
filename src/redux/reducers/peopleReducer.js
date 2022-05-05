@@ -15,3 +15,5 @@ function PeopleReducer(state = initialState,action) {
         default:return state;
     }
 }
+
+export default PeopleReducer;

@@ -8,8 +8,8 @@ const Friends = () => {
     const dispatch = useDispatch()
 
     function logout() {
-        dispatch({type:"logout"})    
-        dispatch({type:"restart"})    
+        dispatch({ type: "logout" })
+        dispatch({ type: "restart" })
     }
 
     return (
@@ -26,24 +26,18 @@ const Friends = () => {
                 <ul className="list-group">
                     {
                         [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 11, 22, 33, 44, 55, 66, 77].map((i) => (
-                            <Friend key={i} />
+                            <li key={i} className="list-group-item d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-center gap-2">
+                                    <img src="" alt="" width="25px" height="25px" />
+                                    <Link to={"/chat"} style={{ textDecoration: "none" }}>Name</Link>
+                                </div>
+                                <i className="p-2 bg-success rounded-circle"></i>
+                            </li>
                         ))
                     }
                 </ul>
             </div>
         </>
-    )
-}
-
-function Friend() {
-    return (
-        <li className="list-group-item d-flex align-items-center justify-content-between">
-            <div className="d-flex align-items-center justify-content-center gap-2">
-                <img src="" alt="" width="25px" height="25px" />
-                <Link to={"/chat"} style={{ textDecoration: "none" }}>Name</Link>
-            </div>
-            <i className="p-2 bg-success rounded-circle"></i>
-        </li>
     )
 }
 
