@@ -27,13 +27,31 @@ client.connect().then(() => {
     io.on("connection", socket => {
         console.log(socket.id + " is connected");
 
-        socket.on("call_peoples",() => {
+        socket.on("call_peoples", () => {
             socket.broadcast.emit("call_peoples")
         })
+        socket.on("call_friends", (data) => {
+            io.to(data.friend).to(data.me).emit("call_friends")
+        })
 
-        // socket.on("connect_friend",(id,cb) => {
-            
-        // })
+        socket.on("connect_friend", (req, cb) => {
+            friends.findOne({ users: { $all: [req.user, req.people] } }).then(findResponse => {
+                if (findResponse === null) {
+                    friends.insertOne({ users: [req.user, req.people], lastMessage: Date.now() }).then(async (fullfilled) => {
+                        if (fullfilled.acknowledged) {
+                            // const user1SocketId = await users.findOne({ _id: ObjectId(req.user) })
+                            // io.to(user1SocketId.socket).emit("new_friend_added_from_people")
+                            // const user2SocketId = await users.findOne({ _id: ObjectId(req.people) })
+                            // io.to(user2SocketId.socket).emit("new_friend_added_from_people")
+                            // socket.emit("new_friend_added_from_people")
+                            cb(true)
+                        }else{
+                            cb(false)
+                        }
+                    })
+                }
+            }).catch(err => console.log(err.message))
+        })
 
         socket.on("get_peoples", async (data, cb) => {
             const newFriendArr = []

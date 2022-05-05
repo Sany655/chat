@@ -9,14 +9,14 @@ const Peoples = () => {
 
     useEffect(() => {
         socket.socket.emit("get_peoples", user._id, (data) => {
-            dispatch({ type: "get_peoples", payload: data })
+            dispatch({ type: "get_peoples", payload: data });
         })
     }, [])
 
     function connectAsFriend(id) {
-        // socket.emit("connect_friend",id,(data) => {
+        socket.emit("connect_friend",{people:id,user:user._id},(data) => {
 
-        // })
+        })
     }
 
     return (
