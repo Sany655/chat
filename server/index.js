@@ -26,6 +26,10 @@ client.connect().then(() => {
     io.on("connection", socket => {
         console.log(socket.id + " is connected");
 
+        socket.on("get_peoples",(data,cv) => {
+            // users.find()
+        })
+
         socket.on("unique-email", (data, cb) => {
             users.findOne({ email: data.email }).then(emailRes => {
                 if (emailRes) {

@@ -2,6 +2,7 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import Default from './routes/layoutes/Default'
+import Home from './routes/pages/Home'
 import Login from './routes/pages/Login'
 import Register from './routes/pages/Register'
 const App = () => {

@@ -1,8 +1,18 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 const Peoples = () => {
+    const user = useSelector(store => store.user).user
+    const socket = useSelector(store => store.socket).socket
+    const dispatch = useDispatch()
+    useEffect(() => {
+        socket.emit("get_peoples",user.id,(data) => {
+            dispatch({type:"get_peoples",payload:data})
+        })
+    },[])
+    
     return (
-        <div className="vh-100 overflow-auto">
+        <div className="col-lg-4 col-md-8">
             <input type="search" className="form-control" placeholder='Search People'/>
             <ul className="list-group">
                 {

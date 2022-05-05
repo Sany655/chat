@@ -8,8 +8,12 @@ const Profile = () => {
                 {/* <i className="bi bi-arrow-left-circle fs-2" role={"button"}></i> */}
                 <Link to={'/'} className="bi bi-arrow-left-circle fs-2 text-dark"></Link>
                 <div className="d-flex align-items-center justify-content-center gap-3">
-                    <i className="bi bi-telephone fs-4"></i>
-                    <i className="bi bi-camera-video fs-4"></i>
+                    <Link className="text-dectoration-none text-dark" to="/audio-calling">
+                        <i className='bi bi-telephone fs-4'></i>
+                    </Link>
+                    <Link className="text-dectoration-none text-dark" to="/video-calling">
+                        <i className='bi bi-camera-video fs-4'></i>
+                    </Link>
                     <i className="bi bi-gear fs-4" role={"button"}></i>
                     <i className="p-2 bg-success rounded-circle"></i>
                 </div>
