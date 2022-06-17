@@ -1,6 +1,6 @@
 const initialState = {
     peoples:[],
-    loading:false
+    loading:true
 }
 
 function PeopleReducer(state = initialState,action) {
@@ -8,7 +8,8 @@ function PeopleReducer(state = initialState,action) {
         case "get_peoples":
             return {
                 ...state,
-                peoples:action.payload
+                peoples:action.payload,
+                loading:false
             }
             break;
     

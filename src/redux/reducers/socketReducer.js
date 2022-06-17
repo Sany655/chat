@@ -4,7 +4,8 @@ const url = "http://localhost:5000/";
 
 const initialState = {
     socket:io.connect(url),
-    url:url
+    url:url,
+    fullHeight:0
 }
 
 function SocketReducer(state = initialState,action) {
@@ -15,7 +16,11 @@ function SocketReducer(state = initialState,action) {
                 ...state,
                 socket:io.connect(url)
             }
-    
+        case "set_full_height":
+            return {
+                ...state,
+                fullHeight:action.payload
+            }
         default:return state;
     }
 }

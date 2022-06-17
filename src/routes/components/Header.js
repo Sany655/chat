@@ -17,20 +17,24 @@ const Header = () => {
         const navLinks = document.querySelectorAll('.nav-item')
         const btn = document.querySelector('.navbar-toggler')
         const menuToggle = document.getElementById('navbarSupportedContent')
-        const bsCollapse = new Collapse(menuToggle,{
-            toggle:false
-        })
-        btn.addEventListener('click', () => { bsCollapse.toggle() })
-        window.addEventListener('click', () => { bsCollapse.hide() })
-        navLinks.forEach((l) => {
-            l.addEventListener('click', () => { bsCollapse.toggle() })
-        })
+        if (window.innerWidth < 992) {
+            const bsCollapse = new Collapse(menuToggle, {
+                toggle: false
+            })
+            btn.addEventListener('click', () => { bsCollapse.toggle() })
+            window.addEventListener('click', () => { bsCollapse.hide() })
+            navLinks.forEach((l) => {
+                l.addEventListener('click', () => { bsCollapse.toggle() })
+            })
+        }
+        dispatch({ type: "set_full_height", payload: 100 - document.querySelector(".navbar").offsetHeight * (100 / window.innerHeight) })
     }, [])
 
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
             <div className="container">
                 <a className="navbar-brand" href="#">Calling Dudes</a>
+                <p>{socket.id===user.socket}</p>
                 <button className="navbar-toggler" type="button" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span className="navbar-toggler-icon"></span>
                 </button>
